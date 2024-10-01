@@ -3,6 +3,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import injectContext from './controllers/appContext'; // Importamos injectContext
 import PaymentsProvider from './context/paymentsContext.jsx';
+import ProjectsProvider  from './context/projectsContext.jsx';
 import Layout from './layout.js';
 
 const container = document.getElementById('root');
@@ -13,8 +14,10 @@ const LayoutWithContext = injectContext(Layout);
 
 root.render(
   <React.StrictMode>
-    <PaymentsProvider>
-      <LayoutWithContext />
-    </PaymentsProvider>
+    <ProjectsProvider >
+      <PaymentsProvider>
+        <LayoutWithContext />
+      </PaymentsProvider>
+    </ProjectsProvider >
   </React.StrictMode>
 );

@@ -1,15 +1,13 @@
-// Home.jsx
 import React from 'react';
-// import { Context } from '../controllers/appContext';
-import Table from '../components/table.jsx';
+import Chart from '../components/chart.jsx';
+import ClientMedition from '../components/clientMedition.jsx';
 
 const Home = () => {
-//   const { store, actions } = useContext(Context);
 
   return (
-    <div>
-      {/* Tu código */}
-      <Table />
+    <div style={{marginLeft:'15%'}}>
+      <Chart />
+      <ClientMedition/>
     </div>
   );
 };
