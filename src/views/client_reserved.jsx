@@ -1,9 +1,11 @@
 import React, { useState, useContext } from 'react';
-import { PaymentsContext } from '../context/paymentsContext.jsx'; // Importamos el contexto para usarlo
-import logo from '../assests/img/logo.png'; // Importamos el logo
+import { PaymentsContext } from '../context/paymentsContext.jsx';
+import InputField from '../components/inputField.jsx';
+import FormRow from '../components/formRow.jsx';
+import logo from '../assests/img/logo.png';
 
 const ClientReserved = () => {
-    const { loadPayments, setClientId } = useContext(PaymentsContext); // Obtener la función del contexto
+    const { loadPayments, setClientId } = useContext(PaymentsContext);
     const [formData, setFormData] = useState({
         date: '',
         separationDate: '',
@@ -21,31 +23,20 @@ const ClientReserved = () => {
         email: '',
         telFijo: '',
         celular: '',
-        separationAmount: '',
-        paymentMethod: 'efectivo',
-        project: '',
-        stage: '',
-        mz: '',
-        lot: '',
-        area: '',
-        price: '',
-        contractDate: '',
-        contractTime: ''
     });
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [showSpouseFields, setShowSpouseFields] = useState(false); // Control para mostrar/ocultar los datos del cónyuge
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         setLoading(true);
         setError(null);
 
         try {
-            setClientId(formData.dniClient); // Aquí podríamos establecer el clientId
-
-            await loadPayments(); // Enviar los datos al backend llamando la función del contexto
+            setClientId(formData.dniClient);
+            await loadPayments();
             alert('Recibo creado correctamente');
         } catch (err) {
             console.error('Error al enviar los datos:', err);
@@ -71,161 +62,130 @@ const ClientReserved = () => {
                     <h1>RECIBO DE SEPARACIÓN</h1>
                 </div>
 
-                <div style={styles.row}>
-                    <label>Fecha:</label>
-                    <input
+                {/* Datos del cliente */}
+                <h2 style={styles.sectionHeader}>Datos del Cliente</h2>
+                <FormRow>
+                    <InputField
+                        label="Fecha"
                         type="text"
                         name="date"
                         value={formData.date}
                         onChange={handleInputChange}
                         required
-                        style={styles.input}
                     />
-                    <label>Fecha de separación:</label>
-                    <input
+                    <InputField
+                        label="Fecha de separación"
                         type="text"
                         name="separationDate"
                         value={formData.separationDate}
                         onChange={handleInputChange}
                         required
-                        style={styles.input}
                     />
-                </div>
+                </FormRow>
 
-                <div style={styles.row}>
-                    <label>Nombre del Cliente:</label>
-                    <input
+                <FormRow>
+                    <InputField
+                        label="Nombre del Cliente"
                         type="text"
                         name="clientName"
                         value={formData.clientName}
                         onChange={handleInputChange}
                         required
-                        style={styles.input}
                     />
-                    <label>DNI:</label>
-                    <input
+                    <InputField
+                        label="DNI del Cliente"
                         type="text"
                         name="dniClient"
                         value={formData.dniClient}
                         onChange={handleInputChange}
                         required
-                        style={styles.input}
                     />
-                </div>
+                </FormRow>
 
-                <div style={styles.row}>
-                    <label>Nombre del cónyuge:</label>
-                    <input
-                        type="text"
-                        name="spouseName"
-                        value={formData.spouseName}
-                        onChange={handleInputChange}
-                        style={styles.input}
-                    />
-                    <label>DNI:</label>
-                    <input
-                        type="text"
-                        name="dniSpouse"
-                        value={formData.dniSpouse}
-                        onChange={handleInputChange}
-                        style={styles.input}
-                    />
-                </div>
-
-                <div style={styles.row}>
-                    <label>Nombre del co-propietario:</label>
-                    <input
-                        type="text"
-                        name="coOwnerName"
-                        value={formData.coOwnerName}
-                        onChange={handleInputChange}
-                        style={styles.input}
-                    />
-                    <label>DNI:</label>
-                    <input
-                        type="text"
-                        name="dniCoOwner"
-                        value={formData.dniCoOwner}
-                        onChange={handleInputChange}
-                        style={styles.input}
-                    />
-                </div>
-
-                <div style={styles.row}>
-                    <label>Razón social:</label>
-                    <input
-                        type="text"
-                        name="socialReason"
-                        value={formData.socialReason}
-                        onChange={handleInputChange}
-                        style={styles.input}
-                    />
-                    <label>RUC:</label>
-                    <input
-                        type="text"
-                        name="ruc"
-                        value={formData.ruc}
-                        onChange={handleInputChange}
-                        style={styles.input}
-                    />
-                </div>
-
-                <div style={styles.row}>
-                    <label>Dirección:</label>
-                    <input
+                <FormRow>
+                    <InputField
+                        label="Dirección"
                         type="text"
                         name="address"
                         value={formData.address}
                         onChange={handleInputChange}
-                        style={styles.input}
                     />
-                    <label>Email:</label>
-                    <input
+                    <InputField
+                        label="Email"
                         type="email"
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        style={styles.input}
                     />
-                </div>
+                </FormRow>
 
-                <div style={styles.row}>
-                    <label>Teléfono Fijo:</label>
-                    <input
+                <FormRow>
+                    <InputField
+                        label="Teléfono Fijo"
                         type="text"
                         name="telFijo"
                         value={formData.telFijo}
                         onChange={handleInputChange}
-                        style={styles.input}
                     />
-                    <label>Celular:</label>
-                    <input
+                    <InputField
+                        label="Celular"
                         type="text"
                         name="celular"
                         value={formData.celular}
                         onChange={handleInputChange}
-                        style={styles.input}
                     />
-                </div>
+                </FormRow>
 
-                <div style={styles.row}>
-                    <label>Importe de separación (Soles):</label>
-                    <input
+                <FormRow>
+                    <InputField
+                        label="Importe de separación (Soles)"
                         type="number"
                         name="soles"
                         value={formData.soles}
                         onChange={handleInputChange}
-                        style={styles.input}
                     />
-                    <label>Importe de separación (Dólares):</label>
-                    <input
+                    <InputField
+                        label="Importe de separación (Dólares)"
                         type="number"
                         name="dolares"
                         value={formData.dolares}
                         onChange={handleInputChange}
-                        style={styles.input}
                     />
+                </FormRow>
+
+                {/* Checkbox para mostrar los campos del cónyuge */}
+                <div style={styles.checkboxContainer}>
+                    <input
+                        type="checkbox"
+                        id="showSpouseFields"
+                        checked={showSpouseFields}
+                        onChange={() => setShowSpouseFields(!showSpouseFields)}
+                    />
+                    <label htmlFor="showSpouseFields">Agregar datos del cónyuge</label>
                 </div>
+
+                {/* Mostrar los campos del cónyuge si el checkbox está seleccionado */}
+                {showSpouseFields && (
+                    <>
+                        <h2 style={styles.sectionHeader}>Datos del Cónyuge</h2>
+                        <FormRow>
+                            <InputField
+                                label="Nombre del Cónyuge"
+                                type="text"
+                                name="spouseName"
+                                value={formData.spouseName}
+                                onChange={handleInputChange}
+                            />
+                            <InputField
+                                label="DNI del Cónyuge"
+                                type="text"
+                                name="dniSpouse"
+                                value={formData.dniSpouse}
+                                onChange={handleInputChange}
+                            />
+                        </FormRow>
+                    </>
+                )}
 
                 <button
                     type="submit"
@@ -241,14 +201,12 @@ const ClientReserved = () => {
     );
 };
 
-// Estilos básicos
 const styles = {
     container: {
         width: '100%',
         maxWidth: '900px',
         margin: '0 auto',
         padding: '20px',
-        border: '1px solid #ccc',
         borderRadius: '10px',
         backgroundColor: '#fff',
     },
@@ -261,17 +219,15 @@ const styles = {
     logo: {
         width: '100px',
     },
-    row: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        marginBottom: '10px',
+    sectionHeader: {
+        fontSize: '18px',
+        margin: '20px 0 10px',
+        fontWeight: 'bold',
     },
-    input: {
-        flex: '1',
-        marginRight: '10px',
-        padding: '10px',
-        borderRadius: '5px',
-        border: '1px solid #ccc',
+    checkboxContainer: {
+        margin: '20px 0',
+        display: 'flex',
+        alignItems: 'center',
     },
     submitButton: {
         marginTop: '20px',

@@ -1,16 +1,24 @@
 import React, { useState } from 'react';
 import backgroundVideo from '../assests/video/ontarioVideo.mp4';
 import logo from '../assests/img/logodarkbackground.png';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // Importar FontAwesomeIcon
-import { faUser, faLock } from '@fortawesome/free-solid-svg-icons'; // Importar íconos específicos
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faLock } from '@fortawesome/free-solid-svg-icons';
+import ButtonLoader from '../components/buttonLoader.jsx';  // Importamos el componente Button
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);  // Estado para manejar el loading
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        console.log('Logging in with:', email, password);
+        setLoading(true);  // Iniciar la carga
+
+        // Simulación de una llamada a la API
+        setTimeout(() => {
+            console.log('Logging in with:', email, password);
+            setLoading(false);  // Detener la carga
+        }, 2000);  // Simulamos 2 segundos de espera
     };
 
     const styles = {
@@ -66,7 +74,7 @@ const Login = () => {
         icon: {
             color: '#fff',
             fontSize: '20px',
-            marginRight: '10px'
+            marginRight: '10px',
         },
         options: {
             display: 'flex',
@@ -79,17 +87,6 @@ const Login = () => {
         link: {
             color: 'white',
             textDecoration: 'none',
-        },
-        loginButton: {
-            width: '100%',
-            padding: '12px 15px',
-            border: 'none',
-            borderRadius: '30px',
-            backgroundColor: '#cbf000',
-            color: '#1c284c',
-            fontSize: '16px',
-            cursor: 'pointer',
-            marginBottom: '20px',
         },
     };
 
@@ -130,9 +127,14 @@ const Login = () => {
                             ¿Olvidaste tu contraseña?
                         </a>
                     </div>
-                    <button type="submit" style={styles.loginButton}>
-                        Ingresar
-                    </button>
+
+                    {/* Usamos el botón con animación de carga */}
+                    <ButtonLoader
+                        type="submit"
+                        label="Ingresar"
+                        onClick={handleLogin}
+                        loading={loading}  // Indicamos si está en estado de carga
+                    />
                 </form>
             </div>
         </div>

@@ -3,13 +3,21 @@ import backgroundVideo from '../assests/video/ontarioVideo.mp4';
 import logo from '../assests/img/logodarkbackground.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import ButtonLoader from '../components/buttonLoader.jsx';  // Importamos el componente ButtonLoader
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
+    const [loading, setLoading] = useState(false);  // Estado de carga para el botón
 
     const handleForgotPassword = (e) => {
         e.preventDefault();
-        console.log('Password recovery for:', email);
+        setLoading(true);  // Iniciamos el estado de carga
+
+        // Simulación de llamada a la API
+        setTimeout(() => {
+            console.log('Password recovery for:', email);
+            setLoading(false);  // Finalizamos el estado de carga
+        }, 2000);  // Simulamos 2 segundos de espera
     };
 
     const styles = {
@@ -65,22 +73,11 @@ const ForgotPassword = () => {
         icon: {
             color: '#fff',
             fontSize: '20px',
-            marginRight: '10px'
+            marginRight: '10px',
         },
         link: {
             color: 'white',
             textDecoration: 'none',
-        },
-        sendButton: {
-            width: '100%',
-            padding: '12px 15px',
-            border: 'none',
-            borderRadius: '30px',
-            backgroundColor: '#cbf000',
-            color: '#1c284c',
-            fontSize: '16px',
-            cursor: 'pointer',
-            marginBottom: '20px',
         },
     };
 
@@ -105,9 +102,14 @@ const ForgotPassword = () => {
                             style={styles.input}
                         />
                     </div>
-                    <button type="submit" style={styles.sendButton}>
-                        Enviar enlace de recuperación
-                    </button>
+
+                    {/* Usamos el botón con animación de carga */}
+                    <ButtonLoader
+                        type="submit"
+                        label="Enviar enlace de recuperación"
+                        onClick={handleForgotPassword}
+                        loading={loading}  // Indicamos si está en estado de carga
+                    />
                 </form>
                 <div>
                     <a href="/login" style={styles.link}>
