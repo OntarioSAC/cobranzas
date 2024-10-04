@@ -1,0 +1,95 @@
+/* boton de carga "Button loader" */
+.button-loader {
+    width: 100%;
+    padding: 12px 15px;
+    border: none;
+    border-radius: 30px;
+    background-color: #cbf000;
+    color: #1c284c;
+    font-size: 16px;
+    cursor: pointer;
+    opacity: 1;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.5s ease, box-shadow 0.5s ease, background-color 0.5s ease; /* Suave */
+}
+
+.button-loader:hover {
+    background-color: #cde803; /* Verde oscuro para hover */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada al hacer hover */
+
+}
+
+.button-loader.disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.loading-icon {
+    margin-right: 10px;
+}
+
+/* check box */
+
+/* Estilos del contenedor */
+.custom-checkbox-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* Ocultar el checkbox nativo */
+.custom-checkbox {
+    display: none;
+}
+
+/* Estilo del círculo verde y el punto */
+.custom-checkbox-label {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding-left: 30px;
+    color: #1c284c;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.custom-checkbox-label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background-color: #1c284c; /* Verde claro */
+    border-radius: 50%;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.custom-checkbox:checked + .custom-checkbox-label::before {
+    background-color: #1c284c; /* Fondo oscuro cuando está marcado */
+    border-color: #1c284c; /* Borde del mismo color */
+}
+
+.custom-checkbox-label::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    background-color: #cbf000;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.custom-checkbox:checked + .custom-checkbox-label::after {
+    opacity: 1;
+}
+
+

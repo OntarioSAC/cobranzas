@@ -1,34 +1,18 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
+import '../styles/Components.css'; // Importar el archivo CSS
 
-const ButtonLoader = ({ onClick, label, type = 'button', style = {}, loading = false, disabled = false }) => {
-    const defaultStyles = {
-        width: '100%',
-        padding: '12px 15px',
-        border: 'none',
-        borderRadius: '30px',
-        backgroundColor: '#cbf000',
-        color: '#1c284c',
-        fontSize: '16px',
-        cursor: loading || disabled ? 'not-allowed' : 'pointer',
-        opacity: loading || disabled ? 0.6 : 1,
-        marginBottom: '20px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        ...style, // Permite pasar estilos personalizados
-    };
-
+const ButtonLoader = ({ onClick, label, type = 'button', loading = false, disabled = false }) => {
     return (
         <button
             type={type}
-            style={defaultStyles}
+            className={`button-loader ${loading || disabled ? 'disabled' : ''}`} // Aplicar clases
             onClick={onClick}
             disabled={loading || disabled}
         >
             {loading ? (
-                <FontAwesomeIcon icon={faCircleNotch} spin style={{ marginRight: '10px' }} />  // Animación de carga
+                <FontAwesomeIcon icon={faCircleNotch} spin className="loading-icon" />
             ) : null}
             {loading ? 'Cargando...' : label}
         </button>
