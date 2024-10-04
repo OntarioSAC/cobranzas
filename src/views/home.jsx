@@ -5,7 +5,7 @@ import ClientMedition from '../components/clientMedition.jsx';
 const Home = () => {
 
   return (
-    <div style={{marginLeft:'15%'}}>
+    <div >
       <Chart />
       <ClientMedition/>
     </div>

@@ -1,145 +1,106 @@
-import React, { useState, useEffect } from 'react';
-import { FaChevronDown, FaChevronRight } from 'react-icons/fa';
-import { useLocation } from 'react-router-dom'; 
-import Logo from '../components/logo.jsx'; // Importar el componente memoizado del logo
+import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome, faFileAlt, faUserAlt, faAddressBook, faClipboard, faProjectDiagram } from '@fortawesome/free-solid-svg-icons';
+import { NavLink } from 'react-router-dom';
+import logo from '../assests/img/logo.png';
+import logosmall from '../assests/img/logosmall.png';
+import '../styles/Menu.css';
 
-const Sidebar = () => {
-  const location = useLocation(); // Hook para obtener la ubicación actual
-  const [hoveredItem, setHoveredItem] = useState(null);
-  const [isClientesOpen, setIsClientesOpen] = useState(false); // Estado para controlar el despliegue del submenú
-
-  // Abrir el submenú "Clientes" automáticamente si estamos en una ruta relacionada con "Clientes"
-  useEffect(() => {
-    if (location.pathname.startsWith('/clientes')) {
-      setIsClientesOpen(true); // Mantener el submenú abierto
-    }
-  }, [location.pathname]);
-
+const Sidebar = ({ isMinimized }) => {
   const sidebarStyle = {
     height: '100vh',
-    width: '200px',
-    backgroundColor: '#1c284c',
+    width: isMinimized ? '85px' : '270px',
+    backgroundColor: '#f3f1eb',
     position: 'fixed',
-    top: 0,
+    top: '60px',
     left: 0,
+    paddingTop: '20px',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'start',
-    alignItems: 'center', // Centrar el contenido del sidebar
+    alignItems: 'center',
+    transition: 'width 0.3s ease',
   };
 
-  const ulStyle = {
-    listStyleType: 'none',
-    padding: 0,
-    margin: 0,
-    width: '100%', // Para que los enlaces ocupen todo el ancho del sidebar
+  const liStyle = {
+    padding: '13px',
+    alignItems: 'center',
+    color: '#1c284c',
+    cursor: 'default',
   };
-
-  const linkStyle = (isHovered, isActive) => ({
-    display: 'block',
-    padding: '10px 20px',
-    backgroundColor: isActive ? '#cbf000' : isHovered ? '#cbf000' : 'transparent',
-    color: isHovered || isActive ? 'black' : 'white',
-    textDecoration: 'none',
-    transition: 'background-color 0.3s ease, color 0.3s ease',
-    position: 'relative',
-  });
-
-  const arrowStyle = {
-    position: 'absolute',
-    right: '20px',
-    fontSize: '12px',
-    marginTop: '5px',
-  };
-
-  const subMenuStyle = {
-    listStyleType: 'none',
-    paddingLeft: '0px',
-    margin: 0,
-  };
-
-  const subLinkStyle = (isHovered, isActive) => ({
-    display: 'block',
-    padding: '8px 20px',
-    backgroundColor: isActive ? '#cbf000' : isHovered ? '#cbf000' : 'transparent',
-    color: isHovered || isActive ? 'black' : 'white',
-    textDecoration: 'none',
-    transition: 'background-color 0.3s ease, color 0.3s ease',
-  });
 
   return (
     <div style={sidebarStyle}>
-      {/* Utiliza el logo memoizado */}
-      <Logo />
-      <ul style={ulStyle}>
-        <li
-          onMouseEnter={() => setHoveredItem('home')}
-          onMouseLeave={() => setHoveredItem(null)}
-        >
-          <a 
-            href="/" 
-            style={linkStyle(hoveredItem === 'home', location.pathname === '/')} // Marcar activo si está en home
+      <div className="sidebar-logo">
+        <img
+          src={isMinimized ? logosmall : logo}
+          alt="Logo"
+          style={{ width: isMinimized ? '40px' : '150px', marginBottom:'0px' }}
+        />
+      </div>
+
+      <ul className="sidebar-nav" style={{ listStyle: 'none', padding: 0 }}>
+        <li style={liStyle}>
+          <NavLink
+            to="/"
+            className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'}
           >
-            Home
-          </a>
-        </li>
-        <li
-          onMouseEnter={() => setHoveredItem('clientes')}
-          onMouseLeave={() => setHoveredItem(null)}
-          onClick={() => setIsClientesOpen(!isClientesOpen)} // Cambia el estado para abrir/cerrar el submenú
-        >
-          <a 
-            href="#!" 
-            style={linkStyle(hoveredItem === 'clientes', false)} // "Clientes" nunca estará activo (sin color verde)
-          >
-            Clientes
-            <span style={arrowStyle}>
-              {isClientesOpen ? <FaChevronDown /> : <FaChevronRight />} {/* Icono dinámico */}
-            </span>
-          </a>
+            <FontAwesomeIcon icon={faHome} />
+            {!isMinimized && <span>Inicio</span>}
+          </NavLink>
         </li>
 
-        {/* Submenú para Clientes */}
-        {isClientesOpen && (
-          <ul style={subMenuStyle}>
-            <li
-              onMouseEnter={() => setHoveredItem('clientesPorCobrar')}
-              onMouseLeave={() => setHoveredItem(null)}
-            >
-              <a 
-                href="/clientes/informacion" 
-                style={subLinkStyle(hoveredItem === 'clientesPorCobrar', location.pathname === '/clientes/informacion')}
-              >
-                Clientes por cobrar
-              </a>
-            </li>
-            <li
-              onMouseEnter={() => setHoveredItem('clientesResueltos')}
-              onMouseLeave={() => setHoveredItem(null)}
-            >
-              <a 
-                href="/clientes/resueltos" 
-                style={subLinkStyle(hoveredItem === 'clientesResueltos', location.pathname === '/clientes/resueltos')}
-              >
-                Clientes resueltos
-              </a>
-            </li>
-          </ul>
-        )}
-        <li
-          onMouseEnter={() => setHoveredItem('proyectos')}
-          onMouseLeave={() => setHoveredItem(null)}
-        >
-          <a 
-            href="/proyectos" 
-            style={linkStyle(hoveredItem === 'proyectos', location.pathname === '/proyectos')}
+        <li style={liStyle}>
+          <NavLink
+            to="/clientes/informacion"
+            className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'}
           >
-            Proyectos
-          </a>
+            <FontAwesomeIcon icon={faUserAlt} />
+            {!isMinimized && <span>Cliente Ontario</span>}
+          </NavLink>
+        </li>
+
+        <li style={liStyle}>
+          <NavLink
+            to="/proyectos"
+            className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'}
+          >
+            <FontAwesomeIcon icon={faProjectDiagram} />
+            {!isMinimized && <span>Proyectos</span>}
+          </NavLink>
+        </li>
+
+        <li style={liStyle}>
+          <NavLink
+            to="/clientes/resuelto"
+            className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'}
+          >
+            <FontAwesomeIcon icon={faFileAlt} />
+            {!isMinimized && <span>Cliente Resuelto</span>}
+          </NavLink>
+        </li>
+
+        <li style={liStyle}>
+          <NavLink
+            to="/clientes/separacion"
+            className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'}
+          >
+            <FontAwesomeIcon icon={faAddressBook} />
+            {!isMinimized && <span>Cliente Separación</span>}
+          </NavLink>
+        </li>
+
+        <li style={liStyle}>
+          <NavLink
+            to="/formulario-cliente-reservacion"
+            className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'}
+          >
+            <FontAwesomeIcon icon={faClipboard} />
+            {!isMinimized && <span>Formulario Separación</span>}
+          </NavLink>
         </li>
       </ul>
     </div>
   );
 };
 
-export default React.memo(Sidebar);
+export default Sidebar;

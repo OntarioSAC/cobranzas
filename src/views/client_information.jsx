@@ -10,13 +10,16 @@ const ClienteInformation = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Dejar el array de dependencias vacío
 
+
+
   return (
-    <div>
+    <div >
       {store.isLoadingClients ? (
         <p>Cargando clientes...</p> // Vista de cargando mientras se obtienen los datos
       ) : (
         <Table data={store.clients} /> // Renderizar la tabla con los datos obtenidos
       )}
+
     </div>
   );
 };

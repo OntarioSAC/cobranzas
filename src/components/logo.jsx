@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from '../img/logodarkbackground.png'; // Ruta de tu logo
+import logo from '../assests/img/logodarkbackground.png'; // Ruta de tu logo
 
 const Logo = () => {
   const logoStyle = {

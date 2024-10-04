@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import backgroundVideo from '../assests/video/ontarioVideo.mp4';
 import logo from '../assests/img/logodarkbackground.png';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // Importar FontAwesomeIcon
-import { faUser, faLock } from '@fortawesome/free-solid-svg-icons'; // Importar íconos específicos
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 
-const Login = () => {
+const ForgotPassword = () => {
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
 
-    const handleLogin = (e) => {
+    const handleForgotPassword = (e) => {
         e.preventDefault();
-        console.log('Logging in with:', email, password);
+        console.log('Password recovery for:', email);
     };
 
     const styles = {
@@ -34,7 +33,7 @@ const Login = () => {
             objectFit: 'cover',
             zIndex: -1,
         },
-        loginBox: {
+        forgotBox: {
             backgroundColor: 'rgba(0, 0, 0, 0.4)',
             padding: '40px',
             borderRadius: '20px',
@@ -49,7 +48,7 @@ const Login = () => {
             marginBottom: '20px',
         },
         inputGroup: {
-            marginBottom: '20px',
+            marginBottom: '70px',
             display: 'flex',
             alignItems: 'center',
         },
@@ -68,19 +67,11 @@ const Login = () => {
             fontSize: '20px',
             marginRight: '10px'
         },
-        options: {
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '20px',
-            fontSize: '14px',
-            color: 'white',
-        },
         link: {
             color: 'white',
             textDecoration: 'none',
         },
-        loginButton: {
+        sendButton: {
             width: '100%',
             padding: '12px 15px',
             border: 'none',
@@ -100,43 +91,32 @@ const Login = () => {
                 Your browser does not support the video tag.
             </video>
 
-            <div style={styles.loginBox}>
+            <div style={styles.forgotBox}>
                 <img src={logo} alt="Logo" style={styles.logo} />
-                <form onSubmit={handleLogin}>
+                <form onSubmit={handleForgotPassword}>
                     <div style={styles.inputGroup}>
-                        <FontAwesomeIcon icon={faUser} style={styles.icon} />
+                        <FontAwesomeIcon icon={faEnvelope} style={styles.icon} />
                         <input
-                            type="text"
-                            placeholder="Username"
+                            type="email"
+                            placeholder="Correo electrónico"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
                             style={styles.input}
                         />
                     </div>
-                    <div style={styles.inputGroup}>
-                        <FontAwesomeIcon icon={faLock} style={styles.icon} />
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            style={styles.input}
-                        />
-                    </div>
-                    <div style={styles.options}>
-                        <a href="/forgot-password" style={styles.link}>
-                            ¿Olvidaste tu contraseña?
-                        </a>
-                    </div>
-                    <button type="submit" style={styles.loginButton}>
-                        Ingresar
+                    <button type="submit" style={styles.sendButton}>
+                        Enviar enlace de recuperación
                     </button>
                 </form>
+                <div>
+                    <a href="/login" style={styles.link}>
+                        Volver al login
+                    </a>
+                </div>
             </div>
         </div>
     );
 };
 
-export default Login;
+export default ForgotPassword;

@@ -5,6 +5,7 @@ import injectContext from './controllers/appContext'; // Importamos injectContex
 import PaymentsProvider from './context/paymentsContext.jsx';
 import ProjectsProvider  from './context/projectsContext.jsx';
 import Layout from './layout.js';
+import './styles/App.css'
 
 const container = document.getElementById('root');
 const root = createRoot(container);

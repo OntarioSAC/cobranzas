@@ -1,14 +1,18 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { PaymentsContext } from '../context/paymentsContext'; // Importamos el contexto de pagos
+import Swal from 'sweetalert2'; // Importamos SweetAlert2
+import 'sweetalert2/dist/sweetalert2.min.css'; // Importamos los estilos de SweetAlert2
 
 const ModalPay = ({ show, onClose, client }) => {
-  const { payments, updatePayment } = useContext(PaymentsContext); // Obtenemos los pagos y la función updatePayment desde el contexto
+  const { payments, updatePayment } = useContext(PaymentsContext); // Obtiene los pagos y la función updatePayment desde el contexto
   const [localPayments, setLocalPayments] = useState([]);
 
-  // Actualizamos el estado local cuando los pagos cambian
+  // Actualiza el estado local cuando los pagos cambian
   useEffect(() => {
     if (show && payments.cuotas && payments.cuotas.length > 0) {
-      setLocalPayments([...payments.cuotas]); // Asignar las cuotas a 'localPayments'
+      //cuotas por fecha de mayor a menor
+      const sortedPayments = [...payments.cuotas].sort((a, b) => new Date(b.fecha_pago_cuota) - new Date(a.fecha_pago_cuota));
+      setLocalPayments(sortedPayments); // Asigna las cuotas a 'localPayments' ordenadas por fecha
     }
   }, [payments, show]);
 
@@ -25,21 +29,42 @@ const ModalPay = ({ show, onClose, client }) => {
     // Llamada a la función updatePayment del contexto para actualizar el estado del pago en la API
     updatePayment(idCuota, { estado: newEstado }) // Pasar el idCuota y el estado actualizado
       .then(() => {
-        console.log("Pago actualizado correctamente en el servidor");
+        Swal.fire({
+          title: '¡Pago actualizado!',
+          text: 'El pago ha sido actualizado con éxito.',
+          icon: 'success',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#4CAF50',
+        });
       })
       .catch((error) => {
         console.error("Error al actualizar el pago en el servidor:", error);
+        Swal.fire({
+          title: 'Error',
+          text: 'Hubo un error al actualizar el pago.',
+          icon: 'error',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#f44336',
+        });
       });
   };
 
   useEffect(() => {
     if (!show) return;
+
     const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
+      // Verificamos si el clic ocurrió dentro del modal o dentro de la alerta de SweetAlert2
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target) &&
+        !event.target.closest('.swal2-container') // Evitamos cerrar si el clic fue en SweetAlert2
+      ) {
         onClose();
       }
     };
+
     document.addEventListener('mousedown', handleClickOutside);
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
@@ -47,21 +72,37 @@ const ModalPay = ({ show, onClose, client }) => {
 
   if (!show) return null;
 
+  // Calculamos las cuotas restantes
+  const cuotasRestantes = payments.numero_cuotas - payments.numero_cuotas_pagadas;
+
   return (
     <div style={modalStyles.overlay}>
       <div style={modalStyles.modal} ref={modalRef}>
+        {/* Botón X para cerrar el modal */}
+        <button style={modalStyles.closeButton} onClick={onClose}>
+          &times;
+        </button>
         <h2 style={modalStyles.title}>Cronograma de Pagos</h2>
-        <h3 style={modalStyles.clientName}>Cliente: {client.nombres} {client.apellidos}</h3>
+        <h3 style={modalStyles.clientName}>{client.nombres} {client.apellidos}</h3>
         <h3 style={modalStyles.clientName}>{client.proyecto} {client.lote}</h3>
-        
+
         {/* Aquí se muestra la información adicional del cliente */}
-        <div style={modalStyles.clientInfo}>
-          <p><strong>Tipo de Cuota Inicial:</strong> {payments.tipo_cuota_inicial}</p>
-          <p><strong>Precio de Venta en Dólares:</strong> $ {payments.precio_venta_dolares}</p>
-          <p><strong>Precio de Venta en Soles:</strong> S/. {payments.precio_venta_soles}</p>
-          <p><strong>Tipo de Cambio:</strong> {payments.tipo_cambio}</p>
-          <p><strong>Fecha de pago:</strong> {payments.fecha_pago_cuota}</p>
-          <p><strong>Fecha inicio de pago:</strong> {payments.fecha_inicio_pago}</p>
+        <div style={modalStyles.infoBox}>
+          <p style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '18px', marginBottom: '10px' }}>
+            INFORMACION DE LAS COUTAS DEL CLIENTE
+          </p>
+          <div style={modalStyles.infoRow}>
+            <div style={modalStyles.rightColumn}>
+              <p><strong>NUMERO DE CUOTAS TOTALES:</strong> {payments.numero_cuotas}</p>
+              <p><strong>NUMERO DE CUOTAS PAGADAS:</strong> {payments.numero_cuotas_pagadas}</p>
+              <p><strong>NUMERO DE CUOTAS RESTANTES:</strong> {cuotasRestantes}</p>
+            </div>
+            <div style={modalStyles.leftColumn}>
+              <p><strong>Moneda Segun contrato:</strong> {payments.tipo_moneda}</p>
+              <p><strong>Fecha inicio de pago:</strong> {payments.fecha_inicio_pago}</p>
+            </div>
+
+          </div>
         </div>
 
         <div style={modalStyles.tableContainer}>
@@ -82,7 +123,10 @@ const ModalPay = ({ show, onClose, client }) => {
                 localPayments.map((pago, index) => (
                   <tr key={pago.id_cuota || index}>
                     <td>{pago.fecha_pago_cuota}</td>
-                    <td>{pago.monto_cuota}</td>
+                    <td>
+                      {/* verifica si es soles o dolares y cambia el simbolo */}
+                      {payments.tipo_moneda === 'SOLES' ? `S/. ${pago.monto_cuota}` : `$ ${pago.monto_cuota}`}
+                    </td>
                     <td>
                       <select
                         value={pago.estado ? 'Pendiente' : 'Pagado'}
@@ -100,11 +144,6 @@ const ModalPay = ({ show, onClose, client }) => {
             </tbody>
           </table>
         </div>
-        <div style={modalStyles.buttonContainer}>
-          <button style={modalStyles.closeButton} onClick={onClose}>
-            Cerrar
-          </button>
-        </div>
       </div>
     </div>
   );
@@ -112,6 +151,23 @@ const ModalPay = ({ show, onClose, client }) => {
 
 // Estilos del modal
 const modalStyles = {
+  infoBox: {
+    padding: '15px',
+    marginBottom: '20px',
+  },
+  infoRow: {
+    display: 'flex',
+    justifyContent: 'space-between', // Separa las columnas a los extremos
+    alignItems: 'flex-start', // Alinea el contenido en la parte superior
+    marginTop: '10px',
+  },
+  leftColumn: {
+    flex: '1',
+    textAlign: 'left', // Alineación a la izquierda para esta columna
+  },
+  rightColumn: {
+    flex: '1',
+  },
   overlay: {
     position: 'fixed',
     top: 0,
@@ -192,23 +248,19 @@ const modalStyles = {
     outline: 'none',
     color: '#333',
   },
-  buttonContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '10px',
-    marginTop: '20px',
-  },
   closeButton: {
-    padding: '12px 24px',
-    backgroundColor: '#f44336',
-    color: 'white',
+    position: 'absolute',
+    top: '10px',
+    right: '10px',
+    padding: '5px 10px',
+    backgroundColor: 'transparent',
     border: 'none',
-    borderRadius: '5px',
+    fontSize: '18px',
+    fontWeight: 'bold',
+    color: '#333',
     cursor: 'pointer',
-    fontSize: '16px',
-    fontWeight: '600',
-    transition: 'background-color 0.3s',
   },
+
 };
 
 export default ModalPay;

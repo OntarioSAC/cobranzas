@@ -3,14 +3,16 @@ import { PaymentsContext } from "./../context/paymentsContext.jsx";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileInvoiceDollar, faUser, faDollarSign } from '@fortawesome/free-solid-svg-icons';
 import ModalPay from './modalPay.jsx';
+import ModalInitial from './modalInitial.jsx';
 
 const Table = ({ data }) => {
   const { loadPayments, setClientId } = useContext(PaymentsContext); // Importar setClientId y loadPayments del contexto
   const containerRef = useRef(null); // Ref para detectar clicks fuera del área seleccionada
   const [selectedRow, setSelectedRow] = useState(null); // Estado para la fila seleccionada
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 }); // Posición del mouse para el menú flotante
-  const [isAnimating, setIsAnimating] = useState(false); // Controla la animación del botón flotante
-  const [showModal, setShowModal] = useState(false); // Controla la visualización del modal de pagos
+  const [isAnimating, setIsAnimating] = useState(false); // Controla la animación del botón flotantes
+  const [showModalPay, setshowModalPay] = useState(false); // Controla la visualización del modal de pagos
+  const [showModalInitial, setshowModalInitial] = useState(false); // Controla la visualización del modal de inicial
   const [selectedClient, setSelectedClient] = useState(null); // Estado para el cliente seleccionado
   const [paymentsLoaded, setPaymentsLoaded] = useState(false); // Estado para evitar recargar pagos innecesariamente
 
@@ -37,8 +39,8 @@ const Table = ({ data }) => {
       setIsAnimating(false);
     } else {
       const containerRect = containerRef.current.getBoundingClientRect();
-      const x = event.clientX - containerRect.left + 42;
-      const y = event.clientY - containerRect.top + 45;
+      const x = event.clientX - containerRect.left + 300;
+      const y = event.clientY - containerRect.top + 90;
 
       setMousePosition({ x, y });
       setSelectedRow(index);
@@ -51,15 +53,15 @@ const Table = ({ data }) => {
     setSelectedClient(client);  // Establecer el cliente seleccionado
     setClientId(client.id_fichadc); // Guardar el clientId en el PaymentsContext
     setPaymentsLoaded(false); // Reiniciar el estado de paymentsLoaded
-    setShowModal(true); // Mostrar el modal
+    setshowModalPay(true); // Mostrar el modal
   };
 
-   // Abrir el modal de pagos para un cliente específico
-   const handleOpenModalInitial = (client) => {
+  // Abrir el modal de Inicial para un cliente específico
+  const handleOpenModalInitial = (client) => {
     setSelectedClient(client);  // Establecer el cliente seleccionado
     setClientId(client.id_fichadc); // Guardar el clientId en el PaymentsContext
     setPaymentsLoaded(false); // Reiniciar el estado de paymentsLoaded
-    setShowModal(true); // Mostrar el modal
+    setshowModalInitial(true); // Mostrar el modal
   };
 
   // Cargar los pagos solo si el cliente cambia y los pagos no están ya cargados
@@ -71,22 +73,28 @@ const Table = ({ data }) => {
   }, [selectedClient, paymentsLoaded, loadPayments]);
 
   // Cerrar el modal de pagos
-  const handleCloseModal = () => {
-    setShowModal(false);
+  const handleCloseModalPay = () => {
+    setshowModalPay(false);
+    setSelectedRow(null);
+    setIsAnimating(false);
+  };
+
+  const handleCloseModalInitial = () => {
+    setshowModalInitial(false);
     setSelectedRow(null);
     setIsAnimating(false);
   };
 
   // Estilos para la tabla
   const tableStyles = {
-    width: '85%',
+    width: '85%', // Ancho de la tabla
+    marginTop:'30px',
     borderCollapse: 'separate',
     borderSpacing: '0',
     fontFamily: 'Arial, sans-serif',
     borderRadius: '15px',
     overflow: 'hidden',
-    marginLeft: '200px',
-  };
+};
 
   const thStyles = {
     backgroundColor: '#1c284c',
@@ -107,11 +115,6 @@ const Table = ({ data }) => {
     backgroundColor: selectedRow === index ? '#cbf000' : '#fff',
     cursor: 'pointer',
   });
-
-  const headerText = {
-    color: '#4CAF50',
-    textAlign: 'center',
-  };
 
   const buttonContainer = {
     position: 'absolute',
@@ -148,7 +151,6 @@ const Table = ({ data }) => {
 
   return (
     <div ref={containerRef}>
-      <h2 style={headerText}>Datos de Clientes</h2>
       <div>
         <table style={tableStyles}>
           <thead>
@@ -159,17 +161,18 @@ const Table = ({ data }) => {
               <th style={thStyles}>MOROSIDAD</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody >
             {data.map((row, index) => (
               <tr
                 key={row.id_fichadc || index}
                 style={trStyles(index)}
                 onClick={(event) => handleRowClick(event, index)}
+                
               >
-                <td style={tdStyles}>{row.nombres} {row.apellidos}</td>
-                <td style={{ ...tdStyles, ...proyectoStyles }}>{row.proyecto}</td>
-                <td style={{ ...tdStyles, ...loteStyles }}>{row.lote}</td>
-                <td style={tdStyles}>{row.morosidad ? 'Sí' : 'No'}</td>
+                <td style={{ ...tdStyles, width: '200px' }}>{row.nombres} {row.apellidos}</td>
+                <td style={{ ...tdStyles, ...proyectoStyles, width: '200px' }}>{row.proyecto}</td>
+                <td style={{ ...tdStyles, ...loteStyles, width: '100px' }}>{row.lote}</td>
+                <td style={{ ...tdStyles, width: '100px' }}>{row.morosidad ? 'Sí' : 'No'}</td>
               </tr>
             ))}
           </tbody>
@@ -181,9 +184,9 @@ const Table = ({ data }) => {
               <FontAwesomeIcon icon={faFileInvoiceDollar} />
             </button>
 
-            <button style={buttonStyles} title="Ver cuota inicial">
+            <button style={buttonStyles} title="Ver cuota inicial" onClick={() => handleOpenModalInitial(data[selectedRow])}>
               <div style={{ position: 'relative' }}>
-                <FontAwesomeIcon icon={faDollarSign}  onClick={() => handleOpenModalInitial(data[selectedRow])}/> {/* Ícono de dinero */}
+                <FontAwesomeIcon icon={faDollarSign} /> {/* Ícono de dinero */}
                 <span style={{
                   position: 'absolute',
                   top: '-13px',
@@ -210,13 +213,20 @@ const Table = ({ data }) => {
 
       {selectedClient && (
         <ModalPay
-          show={showModal}
-          onClose={handleCloseModal}
+          show={showModalPay}
+          onClose={handleCloseModalPay}
           client={selectedClient}
         />
       )}
 
-      
+      {selectedClient && (
+        <ModalInitial
+          show={showModalInitial}
+          onClose={handleCloseModalInitial}
+          client={selectedClient}
+        />
+
+      )}
 
       <style>{`
         @keyframes fade-in {
