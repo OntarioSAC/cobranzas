@@ -6,95 +6,96 @@ import ModalPay from './modalPay.jsx';
 import ModalInitial from './modalInitial.jsx';
 
 const Table = ({ data }) => {
-  const { loadPayments, setClientId } = useContext(PaymentsContext); // Importar setClientId y loadPayments del contexto
-  const containerRef = useRef(null); // Ref para detectar clicks fuera del área seleccionada
-  const [selectedRow, setSelectedRow] = useState(null); // Estado para la fila seleccionada
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 }); // Posición del mouse para el menú flotante
-  const [isAnimating, setIsAnimating] = useState(false); // Controla la animación del botón flotantes
-  const [showModalPay, setshowModalPay] = useState(false); // Controla la visualización del modal de pagos
-  const [showModalInitial, setshowModalInitial] = useState(false); // Controla la visualización del modal de inicial
-  const [selectedClient, setSelectedClient] = useState(null); // Estado para el cliente seleccionado
-  const [paymentsLoaded, setPaymentsLoaded] = useState(false); // Estado para evitar recargar pagos innecesariamente
-
-  // Cerrar la selección si se hace clic fuera del contenedor
-  const handleClickOutside = (event) => {
-    if (containerRef.current && !containerRef.current.contains(event.target)) {
-      setSelectedRow(null);
-      setIsAnimating(false);
-    }
-  };
-
-  // Añadir y limpiar el event listener para clics fuera del área seleccionada
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+  const { loadPayments, setClientId } = useContext(PaymentsContext);
+  const containerRef = useRef(null); // Referencia al contenedor de la tabla
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [showModalPay, setShowModalPay] = useState(false);
+  const [showModalInitial, setShowModalInitial] = useState(false);
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [paymentsLoaded, setPaymentsLoaded] = useState(false);
 
   // Manejar el clic en una fila de la tabla
   const handleRowClick = (event, index) => {
-    if (selectedRow !== null) {
+    if (selectedRow === index) {
+      // Si ya está seleccionada la fila, deseleccionarla y ocultar los botones
       setSelectedRow(null);
       setIsAnimating(false);
     } else {
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const x = event.clientX - containerRect.left + 300;
-      const y = event.clientY - containerRect.top + 90;
-
+      // Captura las coordenadas del mouse al hacer clic
+      const x = event.clientX;
+      const y = event.clientY;
       setMousePosition({ x, y });
       setSelectedRow(index);
       setIsAnimating(true);
     }
   };
 
+  // Detectar clics fuera de la tabla para ocultar los botones
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setSelectedRow(null); // Ocultar botones si el clic fue fuera de la tabla
+        setIsAnimating(false);
+      }
+    };
+
+    // Agregar el evento de clic cuando el componente se monta
+    document.addEventListener('mousedown', handleClickOutside);
+
+    // Eliminar el evento de clic cuando el componente se desmonta
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   // Abrir el modal de pagos para un cliente específico
   const handleOpenModalPay = (client) => {
-    setSelectedClient(client);  // Establecer el cliente seleccionado
-    setClientId(client.id_fichadc); // Guardar el clientId en el PaymentsContext
-    setPaymentsLoaded(false); // Reiniciar el estado de paymentsLoaded
-    setshowModalPay(true); // Mostrar el modal
+    setSelectedClient(client); 
+    setClientId(client.id_fichadc); 
+    setPaymentsLoaded(false); 
+    setShowModalPay(true); 
   };
 
   // Abrir el modal de Inicial para un cliente específico
   const handleOpenModalInitial = (client) => {
-    setSelectedClient(client);  // Establecer el cliente seleccionado
-    setClientId(client.id_fichadc); // Guardar el clientId en el PaymentsContext
-    setPaymentsLoaded(false); // Reiniciar el estado de paymentsLoaded
-    setshowModalInitial(true); // Mostrar el modal
+    setSelectedClient(client); 
+    setClientId(client.id_fichadc); 
+    setPaymentsLoaded(false); 
+    setShowModalInitial(true); 
   };
 
-  // Cargar los pagos solo si el cliente cambia y los pagos no están ya cargados
   useEffect(() => {
     if (selectedClient && selectedClient.id_fichadc && !paymentsLoaded) {
       loadPayments();
-      setPaymentsLoaded(true); // Marcar los pagos como cargados
+      setPaymentsLoaded(true);
     }
   }, [selectedClient, paymentsLoaded, loadPayments]);
 
   // Cerrar el modal de pagos
   const handleCloseModalPay = () => {
-    setshowModalPay(false);
+    setShowModalPay(false);
     setSelectedRow(null);
     setIsAnimating(false);
   };
 
   const handleCloseModalInitial = () => {
-    setshowModalInitial(false);
+    setShowModalInitial(false);
     setSelectedRow(null);
     setIsAnimating(false);
   };
 
   // Estilos para la tabla
   const tableStyles = {
-    width: '85%', // Ancho de la tabla
-    marginTop:'30px',
+    width: '85%',
+    marginTop: '30px',
     borderCollapse: 'separate',
     borderSpacing: '0',
     fontFamily: 'Arial, sans-serif',
     borderRadius: '15px',
     overflow: 'hidden',
-};
+  };
 
   const thStyles = {
     backgroundColor: '#1c284c',
@@ -116,8 +117,9 @@ const Table = ({ data }) => {
     cursor: 'pointer',
   });
 
+  // Cambiamos a position: fixed para que los botones floten sobre la ventana
   const buttonContainer = {
-    position: 'absolute',
+    position: 'fixed', // Botones en posición fija en la ventana
     top: `${mousePosition.y}px`,
     left: `${mousePosition.x}px`,
     display: selectedRow !== null ? 'flex' : 'none',
@@ -161,13 +163,12 @@ const Table = ({ data }) => {
               <th style={thStyles}>MOROSIDAD</th>
             </tr>
           </thead>
-          <tbody >
+          <tbody>
             {data.map((row, index) => (
               <tr
                 key={row.id_fichadc || index}
                 style={trStyles(index)}
                 onClick={(event) => handleRowClick(event, index)}
-                
               >
                 <td style={{ ...tdStyles, width: '200px' }}>{row.nombres} {row.apellidos}</td>
                 <td style={{ ...tdStyles, ...proyectoStyles, width: '200px' }}>{row.proyecto}</td>
@@ -186,27 +187,26 @@ const Table = ({ data }) => {
 
             <button style={buttonStyles} title="Ver cuota inicial" onClick={() => handleOpenModalInitial(data[selectedRow])}>
               <div style={{ position: 'relative' }}>
-                <FontAwesomeIcon icon={faDollarSign} /> {/* Ícono de dinero */}
+                <FontAwesomeIcon icon={faDollarSign} />
                 <span style={{
                   position: 'absolute',
                   top: '-13px',
                   right: '5px',
                   backgroundColor: '#1c284c',
                   color: 'white',
-                  padding: '2px 8px',  // Ajustamos el padding para que la palabra "Inicial" quepa bien
-                  borderRadius: '12px', // Lo hacemos más ovalado para adaptarse a la palabra
+                  padding: '2px 8px',
+                  borderRadius: '12px',
                   fontSize: '10px',
                   fontWeight: 'bold'
                 }}>
                   Inicial
-                </span> {/* Etiqueta que indica "Inicial" */}
+                </span>
               </div>
             </button>
 
             <button style={buttonStyles} title="Ver perfil">
               <FontAwesomeIcon icon={faUser} />
             </button>
-
           </div>
         )}
       </div>
@@ -225,7 +225,6 @@ const Table = ({ data }) => {
           onClose={handleCloseModalInitial}
           client={selectedClient}
         />
-
       )}
 
       <style>{`

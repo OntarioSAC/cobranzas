@@ -182,8 +182,8 @@ const modalStyles = {
   },
   modal: {
     backgroundColor: '#fff',
-    width: '60%',
-    maxWidth: '600px',
+    width: '100%',
+    maxWidth: '700px',
     padding: '20px',
     borderRadius: '12px',
     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
