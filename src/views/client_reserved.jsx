@@ -2,7 +2,10 @@ import React, { useState, useContext } from 'react';
 import { PaymentsContext } from '../context/paymentsContext.jsx';
 import InputField from '../components/inputField.jsx';
 import FormRow from '../components/formRow.jsx';
+import ButtonLoader from '../components/buttonLoader.jsx'; // Importamos el componente ButtonLoader
 import logo from '../assests/img/logo.png';
+import CustomCheckbox from '../components/checkBox.jsx';
+
 
 const ClientReserved = () => {
     const { loadPayments, setClientId } = useContext(PaymentsContext);
@@ -154,14 +157,13 @@ const ClientReserved = () => {
                 </FormRow>
 
                 {/* Checkbox para mostrar los campos del cónyuge */}
-                <div style={styles.checkboxContainer}>
-                    <input
-                        type="checkbox"
-                        id="showSpouseFields"
+                <div style={{marginBottom:'15px'}}>
+                    <CustomCheckbox
                         checked={showSpouseFields}
-                        onChange={() => setShowSpouseFields(!showSpouseFields)}
+                        onChange={() => setShowSpouseFields(!showSpouseFields)} // Cambia el estado
+                        label="Agregar datos del cónyuge"
                     />
-                    <label htmlFor="showSpouseFields">Agregar datos del cónyuge</label>
+                    {/* Otros elementos del formulario */}
                 </div>
 
                 {/* Mostrar los campos del cónyuge si el checkbox está seleccionado */}
@@ -187,13 +189,13 @@ const ClientReserved = () => {
                     </>
                 )}
 
-                <button
+                {/* Usamos el botón con animación de carga */}
+                <ButtonLoader
                     type="submit"
-                    style={styles.submitButton}
-                    disabled={loading}
-                >
-                    {loading ? 'Enviando...' : 'Crear Recibo'}
-                </button>
+                    label="Crear Recibo"
+                    onClick={handleSubmit}
+                    loading={loading}  // Indicamos si está en estado de carga
+                />
 
                 {error && <p style={{ color: 'red' }}>{error}</p>}
             </form>
@@ -228,16 +230,6 @@ const styles = {
         margin: '20px 0',
         display: 'flex',
         alignItems: 'center',
-    },
-    submitButton: {
-        marginTop: '20px',
-        width: '100%',
-        padding: '10px',
-        backgroundColor: '#28a745',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
     },
 };
 
