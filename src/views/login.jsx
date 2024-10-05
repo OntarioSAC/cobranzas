@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { useNavigate, Navigate } from 'react-router-dom';
+import { UserContext } from '../context/userContext'; // Asegúrate de que la ruta es correcta
+
 import backgroundVideo from '../assests/video/ontarioVideo.mp4';
 import logo from '../assests/img/logodarkbackground.png';
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons';
@@ -6,19 +9,32 @@ import ButtonLoader from '../components/buttonLoader.jsx';  // Importamos el com
 import InputLogin from '../components/inputLogin.jsx';  // Importamos el nuevo componente
 
 const Login = () => {
-    const [email, setEmail] = useState('');
+    const { login, token } = useContext(UserContext);
+    const navigate = useNavigate();
+
+    const [username, setUsername] = useState('');
+
+    // const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);  // Estado para manejar el loading
 
+    if (token) {
+        return <Navigate to="/" />;
+    }
+
     const handleLogin = async (e) => {
         e.preventDefault();
-        setLoading(true);  // Iniciar la carga
-
-        // Simulación de una llamada a la API
-        setTimeout(() => {
-            console.log('Logging in with:', email, password);
-            setLoading(false);  // Detener la carga
-        }, 2000);  // Simulamos 2 segundos de espera
+        setLoading(true);
+    
+        try {
+            await login(username, password);
+            navigate('/'); // Redirige a la página principal después de un inicio de sesión exitoso
+        } catch (err) {
+            // Manejar el error mostrando un mensaje al usuario
+            alert(err.message || 'Error al iniciar sesión.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const styles = {
@@ -84,8 +100,8 @@ const Login = () => {
                         icon={faUser}
                         type="text"
                         placeholder="Username"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                     />
                     <InputLogin
                         icon={faLock}

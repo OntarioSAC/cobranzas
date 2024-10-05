@@ -1,13 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useContext  } from 'react';
 import backgroundVideo from '../assests/video/ontarioVideo.mp4';
 import logo from '../assests/img/logodarkbackground.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import ButtonLoader from '../components/buttonLoader.jsx';  // Importamos el componente ButtonLoader
 
+import { UserContext } from '../context/userContext';
+import { Navigate } from 'react-router-dom';
+
+
+
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);  // Estado de carga para el botón
+
+    const { token } = useContext(UserContext);
+
+    if (token) {
+        // Usuario autenticado, redirige a '/'
+        return <Navigate to="/" />;
+      }
 
     const handleForgotPassword = async (e) => {
         e.preventDefault();
