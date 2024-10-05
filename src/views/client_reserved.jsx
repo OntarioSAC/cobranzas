@@ -6,9 +6,13 @@ import ButtonLoader from '../components/buttonLoader.jsx'; // Importamos el comp
 import logo from '../assests/img/logo.png';
 import CustomCheckbox from '../components/checkBox.jsx';
 
-
 const ClientReserved = () => {
     const { loadPayments, setClientId } = useContext(PaymentsContext);
+
+    // Aquí pondremos las opciones de Proyectos y Lotes
+    const projects = ['Proyecto A', 'Proyecto B', 'Proyecto C']; // Ejemplos de proyectos
+    const lots = ['Lote 1', 'Lote 2', 'Lote 3']; // Ejemplos de lotes
+
     const [formData, setFormData] = useState({
         date: '',
         separationDate: '',
@@ -26,6 +30,8 @@ const ClientReserved = () => {
         email: '',
         telFijo: '',
         celular: '',
+        selectedProject: '',
+        selectedLot: '',
     });
 
     const [loading, setLoading] = useState(false);
@@ -69,22 +75,37 @@ const ClientReserved = () => {
                 <h2 style={styles.sectionHeader}>Datos del Cliente</h2>
                 <FormRow>
                     <InputField
-                        label="Fecha"
-                        type="text"
-                        name="date"
-                        value={formData.date}
-                        onChange={handleInputChange}
-                        required
-                    />
-                    <InputField
                         label="Fecha de separación"
-                        type="text"
+                        type="date"
                         name="separationDate"
                         value={formData.separationDate}
                         onChange={handleInputChange}
                         required
                     />
                 </FormRow>
+
+                {/* Input extendible de Proyectos */}
+                <FormRow>
+                    <InputField
+                        label="Seleccionar Proyecto"
+                        type="text"
+                        name="selectedProject"
+                        value={formData.selectedProject}
+                        onChange={handleInputChange}
+                        isExtendible={true}
+                        options={projects}  // Proyectos para el input extendible
+                    />
+                    <InputField
+                        label="Seleccionar Lote"
+                        type="text"
+                        name="selectedLot"
+                        value={formData.selectedLot}
+                        onChange={handleInputChange}
+                        isExtendible={true}
+                        options={lots}  // Lotes para el input extendible
+                    />
+                </FormRow>
+
 
                 <FormRow>
                     <InputField
@@ -157,13 +178,12 @@ const ClientReserved = () => {
                 </FormRow>
 
                 {/* Checkbox para mostrar los campos del cónyuge */}
-                <div style={{marginBottom:'15px'}}>
+                <div style={{ marginBottom: '15px' }}>
                     <CustomCheckbox
                         checked={showSpouseFields}
                         onChange={() => setShowSpouseFields(!showSpouseFields)} // Cambia el estado
                         label="Agregar datos del cónyuge"
                     />
-                    {/* Otros elementos del formulario */}
                 </div>
 
                 {/* Mostrar los campos del cónyuge si el checkbox está seleccionado */}
@@ -189,7 +209,7 @@ const ClientReserved = () => {
                     </>
                 )}
 
-                {/* Usamos el botón con animación de carga */}
+                {/* Botón con animación de carga */}
                 <ButtonLoader
                     type="submit"
                     label="Crear Recibo"
@@ -214,7 +234,7 @@ const styles = {
     },
     header: {
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         alignItems: 'center',
         marginBottom: '20px',
     },
@@ -225,11 +245,6 @@ const styles = {
         fontSize: '18px',
         margin: '20px 0 10px',
         fontWeight: 'bold',
-    },
-    checkboxContainer: {
-        margin: '20px 0',
-        display: 'flex',
-        alignItems: 'center',
     },
 };
 
