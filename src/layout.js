@@ -10,6 +10,7 @@ import ForgotPassword from './views/forgot_password';
 import ClientReserved from './views/client_reserved';
 import PrivateRoute from './controllers/privateRoutes.jsx'; // Importa PrivateRoute
 import { UserContext } from './context/userContext'; // Importa UserContext si es necesario
+import ResetPassword from './views/reset_password';
 
 // Memorizar el Sidebar para que no se vuelva a renderizar cuando se cambia de ruta
 const MemoizedSidebar = React.memo(Sidebar);
@@ -97,6 +98,7 @@ const App = () => {
         {/* Rutas públicas */}
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   );
