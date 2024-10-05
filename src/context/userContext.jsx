@@ -13,32 +13,34 @@ const UserProvider = ({ children }) => {
   // Función para autenticar al usuario
   const login = useCallback(async (username, password) => {
     try {
-      const response = await fetch('http://100.42.184.197/api/v1/login/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username,
-          password,
-        }),
-      });
+        const response = await fetch('http://100.42.184.197/api/v1/login/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username,
+                password,
+            }),
+        });
 
-      if (!response.ok) {
-        throw new Error(`Error al iniciar sesión: ${response.statusText}`);
-      }
+        const data = await response.json();
 
-      const data = await response.json();
-      console.log("Datos de autenticación recibidos:", data);
+        if (!response.ok) {
+            throw new Error(data.error || 'Error al iniciar sesión.');
+        }
 
-      // Almacenar el token en localStorage y en el estado
-      localStorage.setItem('token', data.token);
-      setToken(data.token);
-      setUser(data.user); // Guarda la información del usuario si viene en la respuesta
+        // Almacenar el token en localStorage y en el estado
+        localStorage.setItem('token', data.token);
+        setToken(data.token);
+        setUser(data); // Guarda toda la información recibida
+
+        // Limpiar cualquier error previo
+        setError(null);
 
     } catch (error) {
-      console.error("Error al autenticar:", error);
-      setError(error.message);
+        console.error("Error al autenticar:", error);
+        setError(error.message);
     }
   }, []);
 
