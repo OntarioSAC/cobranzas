@@ -9,15 +9,34 @@ const ForgotPassword = () => {
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);  // Estado de carga para el botón
 
-    const handleForgotPassword = (e) => {
+    const handleForgotPassword = async (e) => {
         e.preventDefault();
-        setLoading(true);  // Iniciamos el estado de carga
-
-        // Simulación de llamada a la API
-        setTimeout(() => {
-            console.log('Password recovery for:', email);
-            setLoading(false);  // Finalizamos el estado de carga
-        }, 2000);  // Simulamos 2 segundos de espera
+        setLoading(true);
+    
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/v1/password-reset/request/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+    
+            const data = await response.json();
+    
+            if (!response.ok) {
+                throw new Error(data.error || 'Error al enviar el correo de recuperación.');
+            }
+    
+            console.log('Correo de recuperación enviado:', data);
+            alert('Se ha enviado un enlace de recuperación a su correo electrónico.');
+    
+        } catch (error) {
+            console.error('Error al enviar el correo de recuperación:', error);
+            alert(error.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const styles = {
