@@ -8,6 +8,7 @@ import Navbar from './components/navbar';
 import Login from './views/login';
 import ForgotPassword from './views/forgot_password';
 import ClientReserved from './views/client_reserved';
+import ResetPassword from './views/reset_password';
 
 // Memorizar el Sidebar para que no se vuelva a renderizar cuando se cambia de ruta
 const MemoizedSidebar = React.memo(Sidebar);
@@ -68,6 +69,7 @@ const App = () => {
         {/* Ruta de login que no usa el Layout */}
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   );
