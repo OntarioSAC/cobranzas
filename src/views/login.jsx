@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import backgroundVideo from '../assests/video/ontarioVideo.mp4';
 import logo from '../assests/img/logodarkbackground.png';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons';
 import ButtonLoader from '../components/buttonLoader.jsx';  // Importamos el componente Button
+import InputLogin from '../components/inputLogin.jsx';  // Importamos el nuevo componente
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -56,26 +56,6 @@ const Login = () => {
             width: '150px',
             marginBottom: '20px',
         },
-        inputGroup: {
-            marginBottom: '20px',
-            display: 'flex',
-            alignItems: 'center',
-        },
-        input: {
-            width: '100%',
-            padding: '15px',
-            border: 'none',
-            borderRadius: '30px',
-            backgroundColor: '#fff',
-            fontSize: '16px',
-            outline: 'none',
-            marginLeft: '10px',
-        },
-        icon: {
-            color: '#fff',
-            fontSize: '20px',
-            marginRight: '10px',
-        },
         options: {
             display: 'flex',
             justifyContent: 'space-between',
@@ -100,28 +80,20 @@ const Login = () => {
             <div style={styles.loginBox}>
                 <img src={logo} alt="Logo" style={styles.logo} />
                 <form onSubmit={handleLogin}>
-                    <div style={styles.inputGroup}>
-                        <FontAwesomeIcon icon={faUser} style={styles.icon} />
-                        <input
-                            type="text"
-                            placeholder="Username"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            style={styles.input}
-                        />
-                    </div>
-                    <div style={styles.inputGroup}>
-                        <FontAwesomeIcon icon={faLock} style={styles.icon} />
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            style={styles.input}
-                        />
-                    </div>
+                    <InputLogin
+                        icon={faUser}
+                        type="text"
+                        placeholder="Username"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                    <InputLogin
+                        icon={faLock}
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
                     <div style={styles.options}>
                         <a href="/forgot-password" style={styles.link}>
                             ¿Olvidaste tu contraseña?
