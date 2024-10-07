@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BrowserRouter, Route, Routes, Outlet, useLocation } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { BrowserRouter, Route, Routes, Outlet } from 'react-router-dom';
 import Home from './views/home';
 import Projects from './views/projects';
 import ClientInformation from './views/client_information';
@@ -8,13 +8,15 @@ import Navbar from './components/navbar';
 import Login from './views/login';
 import ForgotPassword from './views/forgot_password';
 import ClientReserved from './views/client_reserved';
+import PrivateRoute from './controllers/privateRoutes.jsx'; // Importa PrivateRoute
+import { UserContext } from './context/userContext'; // Importa UserContext si es necesario
 import ResetPassword from './views/reset_password';
 
 // Memorizar el Sidebar para que no se vuelva a renderizar cuando se cambia de ruta
 const MemoizedSidebar = React.memo(Sidebar);
 
 const Layout = () => {
-  const location = useLocation();
+  const { token } = useContext(UserContext); // Obtén el token del contexto
 
   const [isSidebarMinimized, setIsSidebarMinimized] = useState(false);
 
@@ -25,25 +27,23 @@ const Layout = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      {/* Navbar siempre visible excepto en la ruta de login */}
-      {location.pathname !== '/login' && <Navbar toggleSidebar={toggleSidebar} />}
+      {/* Navbar visible solo si el usuario está autenticado */}
+      {token && <Navbar toggleSidebar={toggleSidebar} />}
 
       <div style={{ display: 'flex', flexGrow: 1 }}>
-        {/* Sidebar siempre visible excepto en la ruta de login */}
-        {location.pathname !== '/login' && (
-          <MemoizedSidebar isMinimized={isSidebarMinimized} />
-        )}
+        {/* Sidebar visible solo si el usuario está autenticado */}
+        {token && <MemoizedSidebar isMinimized={isSidebarMinimized} />}
 
         {/* Contenido principal con scroll propio */}
         <div
           style={{
             flexGrow: 1,
-            marginTop: '60px', // Ajusta el margen superior para empujar el contenido debajo del navbar
-            marginLeft: isSidebarMinimized ? '100px' : '300px',
+            marginTop: token ? '60px' : '0',
+            marginLeft: token ? (isSidebarMinimized ? '100px' : '300px') : '0',
             transition: 'margin-left 0.3s ease',
-            height: 'calc(100vh - 60px)', // Asegura que el contenedor ocupe la pantalla menos el navbar
-            overflowY: 'auto', // Habilita scroll solo si el contenido excede el espacio disponible
-            boxSizing: 'border-box', // Asegura que el padding no afecte el tamaño total
+            height: token ? 'calc(100vh - 60px)' : '100vh',
+            overflowY: 'auto',
+            boxSizing: 'border-box',
           }}
         >
           <Outlet />
@@ -59,17 +59,46 @@ const App = () => {
       <Routes>
         {/* Rutas que usan el Layout */}
         <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="/proyectos" element={<Projects />} />
-          <Route path="/clientes/informacion" element={<ClientInformation />} />
-          <Route path="/formulario-cliente-reservacion" element={<ClientReserved />} />
+          {/* Rutas protegidas */}
+          <Route
+            index
+            element={
+              <PrivateRoute>
+                <Home />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="proyectos"
+            element={
+              <PrivateRoute>
+                <Projects />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="clientes/informacion"
+            element={
+              <PrivateRoute>
+                <ClientInformation />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="formulario-cliente-reservacion"
+            element={
+              <PrivateRoute>
+                <ClientReserved />
+              </PrivateRoute>
+            }
+          />
           <Route path="*" element={<h1>Not found!</h1>} />
         </Route>
 
-        {/* Ruta de login que no usa el Layout */}
+        {/* Rutas públicas */}
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/reset-password?token={token}" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   );
