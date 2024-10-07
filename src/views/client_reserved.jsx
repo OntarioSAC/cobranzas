@@ -9,13 +9,15 @@ import CustomCheckbox from '../components/checkBox.jsx';
 const ClientReserved = () => {
     const { loadPayments, setClientId } = useContext(PaymentsContext);
 
-    // Aquí pondremos las opciones de Proyectos y Lotes
+    // Aquí pondremos las opciones de Proyectos, Lotes y Monedas
     const projects = ['Proyecto A', 'Proyecto B', 'Proyecto C']; // Ejemplos de proyectos
     const lots = ['Lote 1', 'Lote 2', 'Lote 3']; // Ejemplos de lotes
+    const currencies = ['Soles', 'Dólares']; // Opciones para el input de moneda
 
     const [formData, setFormData] = useState({
         date: '',
         separationDate: '',
+        currency: '',
         soles: '',
         dolares: '',
         clientName: '',
@@ -68,11 +70,9 @@ const ClientReserved = () => {
             <form onSubmit={handleSubmit}>
                 <div style={styles.header}>
                     <img src={logo} alt="Logo" style={styles.logo} />
-                    <h1>RECIBO DE SEPARACIÓN</h1>
+                    <h1 style={styles.title}>Codigo</h1>
                 </div>
-
-                {/* Datos del cliente */}
-                <h2 style={styles.sectionHeader}>Datos del Cliente</h2>
+             
                 <FormRow>
                     <InputField
                         label="Fecha de separación"
@@ -81,6 +81,16 @@ const ClientReserved = () => {
                         value={formData.separationDate}
                         onChange={handleInputChange}
                         required
+                    />
+                    <InputField
+                        label="Moneda"
+                        type="text"
+                        name="currency"
+                        value={formData.currency || 'Soles'} // Muestra "Soles" por defecto si el valor es nulo o vacío
+
+                        onChange={handleInputChange}
+                        isExtendible={true}
+                        options={currencies}  // Opciones para el input extendible de moneda
                     />
                 </FormRow>
 
@@ -106,7 +116,7 @@ const ClientReserved = () => {
                     />
                 </FormRow>
 
-
+                {/* Campos adicionales del cliente */}
                 <FormRow>
                     <InputField
                         label="Nombre del Cliente"
@@ -167,14 +177,7 @@ const ClientReserved = () => {
                         name="soles"
                         value={formData.soles}
                         onChange={handleInputChange}
-                    />
-                    <InputField
-                        label="Importe de separación (Dólares)"
-                        type="number"
-                        name="dolares"
-                        value={formData.dolares}
-                        onChange={handleInputChange}
-                    />
+                    />   
                 </FormRow>
 
                 {/* Checkbox para mostrar los campos del cónyuge */}
@@ -234,12 +237,16 @@ const styles = {
     },
     header: {
         display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
+        justifyContent: 'space-between', // Alinea los elementos a los extremos
+        alignItems: 'center', // Centra verticalmente los elementos
         marginBottom: '20px',
     },
     logo: {
         width: '100px',
+        height: 'auto',
+    },
+    title: {
+        margin: 0,
     },
     sectionHeader: {
         fontSize: '18px',

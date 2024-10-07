@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faCalendarAlt } from '@fortawesome/free-solid-svg-icons'; // Importamos los íconos
+import { faChevronDown, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css'; // Importamos los estilos del calendario
+import 'react-datepicker/dist/react-datepicker.css';
 
 const InputField = ({ label, type, name, value, onChange, required, isExtendible = false, options = [] }) => {
   const [filteredOptions, setFilteredOptions] = useState(options); // Mantenemos siempre las opciones completas
@@ -10,21 +10,25 @@ const InputField = ({ label, type, name, value, onChange, required, isExtendible
 
   const handleInputChange = (e) => {
     const newValue = e.target.value;
-    onChange(e); // Llamamos a la función onChange pasada desde el padre
+    onChange(e); // Llama a la función onChange pasada desde el padre
 
     if (isExtendible) {
-      // Filtramos las opciones según el valor del input
+      // Filtra las opciones según el valor del input
       const matches = options.filter((option) =>
         option.toLowerCase().includes(newValue.toLowerCase())
       );
       setFilteredOptions(matches);
-      setShowOptions(true); // Mostramos las opciones filtradas
+      setShowOptions(true); // Muuestra las opciones filtradas
     }
   };
 
   const handleOptionClick = (option) => {
     onChange({ target: { name, value: option } }); // Enviamos el valor seleccionado al padre
     setShowOptions(false); // Cerramos la lista desplegable
+  };
+
+  const toggleDropdown = () => {
+    setShowOptions((prevState) => !prevState); // Alterna el estado de visibilidad del menú desplegable
   };
 
   // Controla el cambio de fecha
@@ -41,7 +45,7 @@ const InputField = ({ label, type, name, value, onChange, required, isExtendible
             <DatePicker
               selected={value}
               onChange={handleDateChange}
-              dateFormat="dd/MM/yyyy" // Formato de la fecha
+              dateFormat="dd/MM/yyyy"
               customInput={
                 <div style={styles.inputWithIcon}>
                   <input
@@ -50,8 +54,13 @@ const InputField = ({ label, type, name, value, onChange, required, isExtendible
                     required={required}
                     style={styles.input}
                   />
-                  <span style={styles.icon} onClick={() => document.querySelector('.react-datepicker__input-container input').focus()}>
-                    <FontAwesomeIcon icon={faCalendarAlt} /> {/* Ícono de calendario */}
+                  <span
+                    style={styles.icon}
+                    onClick={() =>
+                      document.querySelector('.react-datepicker__input-container input').focus()
+                    }
+                  >
+                    <FontAwesomeIcon icon={faCalendarAlt} />
                   </span>
                 </div>
               }
@@ -70,7 +79,7 @@ const InputField = ({ label, type, name, value, onChange, required, isExtendible
               onBlur={() => setTimeout(() => setShowOptions(false), 100)} // Espera antes de cerrar para permitir clic en las opciones
             />
             {isExtendible && (
-              <span style={styles.icon}>
+              <span style={styles.icon} onClick={toggleDropdown}>
                 <FontAwesomeIcon icon={faChevronDown} /> {/* Ícono de flecha */}
               </span>
             )}
@@ -104,30 +113,30 @@ const styles = {
     position: 'relative',
     width: '100%',
     display: 'flex',
-    alignItems: 'center', // Alineamos verticalmente los íconos dentro del input
+    alignItems: 'center', // Alinea verticalmente los íconos dentro del input
   },
   inputWithIcon: {
     position: 'relative',
     width: '100%',
   },
   input: {
-    padding: '15px', // Aumentamos el padding para hacerlo más grande
-    borderRadius: '8px', // Aumentamos el radio de borde para darle más estilo
+    padding: '15px',
+    borderRadius: '8px',
     border: '1px solid #ccc',
-    width: 'calc(100% - 50px)', // Ajuste para el tamaño más grande
-    fontSize: '16px', // Aumentamos el tamaño de la fuente
-    paddingRight: '50px', // Espacio adicional para el ícono
+    width: 'calc(100% - 50px)',
+    fontSize: '16px',
+    paddingRight: '50px',
   },
   icon: {
     position: 'absolute',
-    right: '15px', // Más espacio a la derecha para el ícono
+    right: '15px',
     top: '50%',
     transform: 'translateY(-50%)',
     display: 'flex',
-    alignItems: 'center', // Alinea el ícono verticalmente
-    fontSize: '18px', // Aumentamos el tamaño del ícono
+    alignItems: 'center',
+    fontSize: '18px',
     color: '#999',
-    cursor: 'pointer', // Hacemos el ícono interactivo
+    cursor: 'pointer',
   },
   suggestions: {
     position: 'absolute',
