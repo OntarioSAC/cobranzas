@@ -13,7 +13,7 @@ const UserProvider = ({ children }) => {
   // Función para autenticar al usuario
   const login = useCallback(async (username, password) => {
     try {
-        const response = await fetch('http://127.0.0.1:8000/api/v1/login/', {
+        const response = await fetch('http://100.42.184.197/api/v1/login/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -74,6 +74,63 @@ const UserProvider = ({ children }) => {
     console.log("Sesión cerrada.");
   }, []);
 
+
+  // Función para solicitar el restablecimiento de contraseña
+  const requestPasswordReset = useCallback(async (email) => {
+    try {
+      const response = await fetch('http://100.42.184.197/api/v1/password-reset/request/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Error al enviar el correo de recuperación.');
+      }
+
+      console.log('Correo de recuperación enviado:', data);
+      // Puedes manejar cualquier estado adicional aquí
+
+    } catch (error) {
+      console.error('Error al enviar el correo de recuperación:', error);
+      throw error; // Re-lanzar el error para que el componente lo maneje
+    }
+  }, []);
+
+
+  // Función para confirmar el restablecimiento de contraseña
+  const confirmPasswordReset = useCallback(async (resetToken, newPassword, confirmPassword) => {
+    try {
+      const response = await fetch(`http://100.42.184.197/api/v1/password-reset/confirm/${resetToken}/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          new_password: newPassword,
+          confirm_password: confirmPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Error al restablecer la contraseña.');
+      }
+
+      console.log('Contraseña actualizada correctamente.');
+      // Maneja cualquier estado adicional si es necesario
+
+    } catch (error) {
+      console.error('Error al restablecer la contraseña:', error);
+      throw error; // Re-lanzar el error para que el componente lo maneje
+    }
+  }, []);
+
   return (
     <UserContext.Provider
       value={{
@@ -85,6 +142,8 @@ const UserProvider = ({ children }) => {
         setClientId,
         logout,
         error,
+        requestPasswordReset, 
+        confirmPasswordReset, 
       }}
     >
       {children}
