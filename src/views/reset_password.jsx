@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import backgroundVideo from '../assests/video/ontarioVideo.mp4';
 import logo from '../assests/img/logodarkbackground.png';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
@@ -6,18 +6,21 @@ import ButtonLoader from '../components/buttonLoader.jsx';  // Importamos el com
 import InputLogin from '../components/inputLogin.jsx';  // Importamos el nuevo componente
 
 import { useNavigate, useParams } from 'react-router-dom';
+import { UserContext } from '../context/userContext';
 
 
 const ResetPassword = () => {
 
     const navigate = useNavigate();
-    const { token } = useParams();
+    const { token: resetToken } = useParams(); // Renombramos para evitar confusión
+    
 
-    console.log("Token recibido:", token);  // Para depuración
 
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const { confirmPasswordReset } = useContext(UserContext);
 
     const handleResetPassword = async (e) => {
         e.preventDefault();
@@ -30,23 +33,7 @@ const ResetPassword = () => {
         }
     
         try {
-          const response = await fetch(`http://100.42.184.197/api/v1/password-reset/confirm/${token}/`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              new_password: newPassword,
-              confirm_password: confirmPassword,
-            }),
-          });
-    
-          const data = await response.json();
-    
-          if (!response.ok) {
-            throw new Error(data.error || 'Error al restablecer la contraseña.');
-          }
-    
+          await confirmPasswordReset(resetToken, newPassword, confirmPassword);
           alert('Contraseña actualizada correctamente.');
           navigate('/login');
         } catch (error) {
@@ -55,7 +42,7 @@ const ResetPassword = () => {
         } finally {
           setLoading(false);
         }
-      };
+    };
 
     const styles = {
         container: {
