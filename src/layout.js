@@ -98,7 +98,11 @@ const App = () => {
         {/* Rutas públicas */}
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+<<<<<<< HEAD
         <Route path="/reset-password?token={token}" element={<ResetPassword />} />
+=======
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+>>>>>>> ebace2a00102fe00a300b5ffcb2bcde5884ede74
       </Routes>
     </BrowserRouter>
   );
