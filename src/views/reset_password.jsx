@@ -5,21 +5,57 @@ import { faLock } from '@fortawesome/free-solid-svg-icons';
 import ButtonLoader from '../components/buttonLoader.jsx';  // Importamos el componente Button
 import InputLogin from '../components/inputLogin.jsx';  // Importamos el nuevo componente
 
+import { useNavigate, useParams } from 'react-router-dom';
+
+
 const ResetPassword = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);  // Estado para manejar el loading
 
-    const handleLogin = async (e) => {
+    const navigate = useNavigate();
+    const { token } = useParams();
+
+    console.log("Token recibido:", token);  // Para depuración
+
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const handleResetPassword = async (e) => {
         e.preventDefault();
-        setLoading(true);  // Iniciar la carga
-
-        // Simulación de una llamada a la API
-        setTimeout(() => {
-            console.log('Logging in with:', email, password);
-            setLoading(false);  // Detener la carga
-        }, 2000);  // Simulamos 2 segundos de espera
-    };
+        setLoading(true);
+    
+        if (newPassword !== confirmPassword) {
+          alert('Las contraseñas no coinciden.');
+          setLoading(false);
+          return;
+        }
+    
+        try {
+          const response = await fetch(`http://127.0.0.1:8000/api/v1/password-reset/confirm/${token}/`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              new_password: newPassword,
+              confirm_password: confirmPassword,
+            }),
+          });
+    
+          const data = await response.json();
+    
+          if (!response.ok) {
+            throw new Error(data.error || 'Error al restablecer la contraseña.');
+          }
+    
+          alert('Contraseña actualizada correctamente.');
+          navigate('/login');
+        } catch (error) {
+          console.error('Error:', error);
+          alert(error.message);
+        } finally {
+          setLoading(false);
+        }
+      };
 
     const styles = {
         container: {
@@ -79,29 +115,26 @@ const ResetPassword = () => {
 
             <div style={styles.loginBox}>
                 <img src={logo} alt="Logo" style={styles.logo} />
-                <form onSubmit={handleLogin}>
+                <form onSubmit={handleResetPassword}>
                     <InputLogin
                         icon={faLock}
                         type="password"
-                        placeholder="Contraseña"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Nueva contraseña"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
                     />
                     <InputLogin
                         icon={faLock}
                         type="password"
-                        placeholder="Confirmar contraseña"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Confirmar nueva contraseña"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
                     />
-                   
 
-                    {/* Usamos el botón con animación de carga */}
                     <ButtonLoader
                         type="submit"
                         label="Cambiar contraseña"
-                        onClick={handleLogin}
-                        loading={loading}  // Indicamos si está en estado de carga
+                        loading={loading}
                     />
                 </form>
             </div>
