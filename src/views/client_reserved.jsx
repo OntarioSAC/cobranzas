@@ -1,33 +1,28 @@
 import React, { useState, useContext } from 'react';
 import { PaymentsContext } from '../context/paymentsContext.jsx';
-import InputField from '../components/inputField.jsx';
-import FormRow from '../components/formRow.jsx';
-import ButtonLoader from '../components/buttonLoader.jsx'; // Importamos el componente ButtonLoader
-import logo from '../assests/img/logo.png';
+import { ProjectsContext } from '../context/projectsContext.jsx'; // Importamos el contexto de proyectos
+import ButtonLoader from '../components/buttonLoader.jsx';
 import CustomCheckbox from '../components/checkBox.jsx';
+import { generatePDF } from '../components/pdfGenerator.jsx';
+import FormRow from '../components/formRow.jsx';
+import InputField from '../components/inputField.jsx';
+import logo from '../assests/img/logo.png';
 
-const ClientReserved = () => {
+const ClientForm = () => {
     const { loadPayments, setClientId } = useContext(PaymentsContext);
-
-    // Aquí pondremos las opciones de Proyectos, Lotes y Monedas
-    const projects = ['Proyecto A', 'Proyecto B', 'Proyecto C']; // Ejemplos de proyectos
-    const lots = ['Lote 1', 'Lote 2', 'Lote 3']; // Ejemplos de lotes
-    const currencies = ['Soles', 'Dólares']; // Opciones para el input de moneda
+    const { projects } = useContext(ProjectsContext); // Usamos el contexto de proyectos
+    const currencies = ['Soles', 'Dólares'];
+    const lots = ['Lote 1', 'Lote 2', 'Lote 3'];
 
     const [formData, setFormData] = useState({
-        date: '',
         separationDate: '',
-        currency: '',
+        currency: 'Soles',
         soles: '',
         dolares: '',
         clientName: '',
         spouseName: '',
-        coOwnerName: '',
-        socialReason: '',
         dniClient: '',
         dniSpouse: '',
-        dniCoOwner: '',
-        ruc: '',
         address: '',
         email: '',
         telFijo: '',
@@ -38,7 +33,15 @@ const ClientReserved = () => {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [showSpouseFields, setShowSpouseFields] = useState(false); // Control para mostrar/ocultar los datos del cónyuge
+    const [showSpouseFields, setShowSpouseFields] = useState(false);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            [name]: value,
+        }));
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -49,6 +52,7 @@ const ClientReserved = () => {
             setClientId(formData.dniClient);
             await loadPayments();
             alert('Recibo creado correctamente');
+            generatePDF(formData, showSpouseFields); // Genera el PDF después de enviar el formulario
         } catch (err) {
             console.error('Error al enviar los datos:', err);
             setError('Error al crear el recibo');
@@ -57,44 +61,12 @@ const ClientReserved = () => {
         }
     };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevFormData) => ({
-            ...prevFormData,
-            [name]: value
-        }));
-    };
-
     return (
         <div style={styles.container}>
+            <img src={logo} alt="Logo" style={{ width: '100px', height: 'auto', marginBottom: '20px' }} />
             <form onSubmit={handleSubmit}>
-                <div style={styles.header}>
-                    <img src={logo} alt="Logo" style={styles.logo} />
-                    <h1 style={styles.title}>Codigo</h1>
-                </div>
-             
-                <FormRow>
-                    <InputField
-                        label="Fecha de separación"
-                        type="date"
-                        name="separationDate"
-                        value={formData.separationDate}
-                        onChange={handleInputChange}
-                        required
-                    />
-                    <InputField
-                        label="Moneda"
-                        type="text"
-                        name="currency"
-                        value={formData.currency || 'Soles'} // Muestra "Soles" por defecto si el valor es nulo o vacío
 
-                        onChange={handleInputChange}
-                        isExtendible={true}
-                        options={currencies}  // Opciones para el input extendible de moneda
-                    />
-                </FormRow>
-
-                {/* Input extendible de Proyectos */}
+                {/* Selección de Proyecto y Lote */}
                 <FormRow>
                     <InputField
                         label="Seleccionar Proyecto"
@@ -103,7 +75,7 @@ const ClientReserved = () => {
                         value={formData.selectedProject}
                         onChange={handleInputChange}
                         isExtendible={true}
-                        options={projects}  // Proyectos para el input extendible
+                        options={projects.map((project) => project.nombre_proyecto)} // Usamos los nombres de los proyectos
                     />
                     <InputField
                         label="Seleccionar Lote"
@@ -112,11 +84,11 @@ const ClientReserved = () => {
                         value={formData.selectedLot}
                         onChange={handleInputChange}
                         isExtendible={true}
-                        options={lots}  // Lotes para el input extendible
+                        options={lots}
                     />
                 </FormRow>
 
-                {/* Campos adicionales del cliente */}
+                {/* Información del Cliente */}
                 <FormRow>
                     <InputField
                         label="Nombre del Cliente"
@@ -171,53 +143,59 @@ const ClientReserved = () => {
                 </FormRow>
 
                 <FormRow>
+
                     <InputField
-                        label="Importe de separación (Soles)"
-                        type="number"
-                        name="soles"
-                        value={formData.soles}
+                        label="Moneda"
+                        type="text"
+                        name="currency"
+                        value={formData.currency}
                         onChange={handleInputChange}
-                    />   
+                        isExtendible={true}
+                        options={currencies}
+                    />
+                    <InputField
+                        label="Importe de separación"
+                        type="number"
+                        name={formData.currency === 'Soles' ? 'soles' : 'dolares'}
+                        value={formData.currency === 'Soles' ? formData.soles : formData.dolares}
+                        onChange={handleInputChange}
+                    />
                 </FormRow>
 
                 {/* Checkbox para mostrar los campos del cónyuge */}
                 <div style={{ marginBottom: '15px' }}>
                     <CustomCheckbox
                         checked={showSpouseFields}
-                        onChange={() => setShowSpouseFields(!showSpouseFields)} // Cambia el estado
+                        onChange={() => setShowSpouseFields(!showSpouseFields)}
                         label="Agregar datos del cónyuge"
                     />
                 </div>
 
                 {/* Mostrar los campos del cónyuge si el checkbox está seleccionado */}
                 {showSpouseFields && (
-                    <>
-                        <h2 style={styles.sectionHeader}>Datos del Cónyuge</h2>
-                        <FormRow>
-                            <InputField
-                                label="Nombre del Cónyuge"
-                                type="text"
-                                name="spouseName"
-                                value={formData.spouseName}
-                                onChange={handleInputChange}
-                            />
-                            <InputField
-                                label="DNI del Cónyuge"
-                                type="text"
-                                name="dniSpouse"
-                                value={formData.dniSpouse}
-                                onChange={handleInputChange}
-                            />
-                        </FormRow>
-                    </>
+                    <FormRow>
+                        <InputField
+                            label="Nombre del Cónyuge"
+                            type="text"
+                            name="spouseName"
+                            value={formData.spouseName}
+                            onChange={handleInputChange}
+                        />
+                        <InputField
+                            label="DNI del Cónyuge"
+                            type="text"
+                            name="dniSpouse"
+                            value={formData.dniSpouse}
+                            onChange={handleInputChange}
+                        />
+                    </FormRow>
                 )}
 
-                {/* Botón con animación de carga */}
                 <ButtonLoader
                     type="submit"
                     label="Crear Recibo"
                     onClick={handleSubmit}
-                    loading={loading}  // Indicamos si está en estado de carga
+                    loading={loading}
                 />
 
                 {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -232,27 +210,12 @@ const styles = {
         maxWidth: '900px',
         margin: '0 auto',
         padding: '20px',
-        borderRadius: '10px',
         backgroundColor: '#fff',
     },
-    header: {
-        display: 'flex',
-        justifyContent: 'space-between', // Alinea los elementos a los extremos
-        alignItems: 'center', // Centra verticalmente los elementos
-        marginBottom: '20px',
-    },
-    logo: {
-        width: '100px',
-        height: 'auto',
-    },
     title: {
-        margin: 0,
-    },
-    sectionHeader: {
-        fontSize: '18px',
-        margin: '20px 0 10px',
-        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: '20px',
     },
 };
 
-export default ClientReserved;
+export default ClientForm;
