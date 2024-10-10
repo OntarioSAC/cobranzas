@@ -11,7 +11,7 @@ const UserProvider = ({ children }) => {
   // Función para autenticar al usuario
   const login = useCallback(async (username, password) => {
     try {
-      const response = await fetch('http://100.42.184.197/api/v1/login/', {
+      const response = await fetch('http://127.0.0.1:8000/api/v1/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ const UserProvider = ({ children }) => {
   // Función para solicitar el restablecimiento de contraseña
   const requestPasswordReset = useCallback(async (email) => {
     try {
-      const response = await fetch('http://100.42.184.197/api/v1/password-reset/request/', {
+      const response = await fetch('http://127.0.0.1:8000/api/v1/password-reset/request/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ const UserProvider = ({ children }) => {
   // Función para confirmar el restablecimiento de contraseña
   const confirmPasswordReset = useCallback(async (resetToken, newPassword, confirmPassword) => {
     try {
-      const response = await fetch(`http://100.42.184.197/api/v1/password-reset/confirm/${resetToken}/`, {
+      const response = await fetch(`http://127.0.0.1:8000/api/v1/password-reset/confirm/${resetToken}/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
