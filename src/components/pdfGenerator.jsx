@@ -56,8 +56,8 @@ export const generatePDF = (formData, showSpouseFields) => {
     doc.setFontSize(10);
     const declarationText = `
 Declaración Jurada: El cliente por el presente declara que ha sido informado verbalmente por la empresa sobre el lote a adquirir: Partida Registral del proyecto, situación del saneamiento (Licencias, Habilitación Urbana) área del inmueble, áreas comunes, acabados y servicios básicos así como los datos de la empresa (RUC, partida, representante).
-1. El monto de separación de un lote por la suma mínima de $100.00 (cien con 00/100 dólares americanos).
-2. Este documento es único y exclusivamente válido para la separación de un lote y tiene la condición de arras.
+1. El monto de separación de un lote por la suma mínima de S/. 50.00 (cincuenta con 00/100 soles).
+2. Este documento es único y exclusivamente válido para la separación e inicial de un lote, tiene la condición de arras.
 3. Este documento tiene la condición de arras de acuerdo al Art 1478 del Código Civil por lo cual el cliente tiene un plazo de 7 días naturales para realizar el depósito correspondiente a la inicial del lote en venta y suscribir el respectivo contrato de compraventa de bien futuro.
 4. El Cliente y la Empresa pactan convencionalmente que en caso la suscripción del contrato no se realice por causas injustificadas de la empresa, deberá devolver el monto cancelado por el cliente por concepto de separación.
 5. Todos los trámites para la suscripción del contrato de Compraventa, así como información documental referente a anexos, planos y saneamiento del lote a adquirir, deberán efectuarse únicamente en las oficinas de la empresa.

@@ -86,7 +86,11 @@
     color: #333;
 }
 
+.dropdown-menu ul li:hover {
+    background-color: #f0f0f0; /* Color de fondo al pasar el cursor */
+}
 
+/* sidebar */
 
 .sidebar.minimized {
     width: 60px; /* Ancho cuando está minimizado */

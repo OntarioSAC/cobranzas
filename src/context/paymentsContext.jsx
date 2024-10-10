@@ -6,6 +6,7 @@ export const PaymentsContext = createContext();
 const PaymentsProvider = ({ children }) => {
   const [payments, setPayments] = useState({}); // Inicializamos como un objeto vacío en lugar de un array
   const [clientId, setClientId] = useState(null); // Guardamos el clientId global
+  const [boletaCode, setBoletaCode] = useState(''); // Estado para almacenar el código generado por el backend
 
   // Función para cargar los pagos desde la API, usando el clientId global
   const loadPayments = useCallback(async () => {
@@ -16,7 +17,7 @@ const PaymentsProvider = ({ children }) => {
         throw new Error(`Error al cargar los pagos: ${response.statusText}`);
       }
       const data = await response.json();
-      console.log("Datos recibidos desde la API:", data); // Ver los datos recibidos
+      console.log("Datos recibidos desde la API:", data);
 
       setPayments(data);
     } catch (error) {
@@ -24,6 +25,21 @@ const PaymentsProvider = ({ children }) => {
       setPayments({}); // En caso de error, asignamos un objeto vacío para evitar problemas
     }
   }, [clientId]);
+
+  // Función para generar el código de boleta desde la API
+  const generateBoletaCode = useCallback(async () => {
+    try {
+      const response = await fetch('http://100.42.184.197/api/v1/generate_boleta_code/');
+      if (!response.ok) {
+        throw new Error(`Error al generar el código de boleta: ${response.statusText}`);
+      }
+      const data = await response.json();
+      setBoletaCode(data.codigo); // Suponiendo que el backend retorna un objeto con el campo "codigo"
+      console.log("Código de boleta generado:", data.codigo);
+    } catch (error) {
+      console.error("Error al generar el código de boleta:", error);
+    }
+  }, []);
 
   // Función para actualizar una cuota específica de un cliente
   const updatePayment = async (cuotaId, updatedData) => {
@@ -59,7 +75,7 @@ const PaymentsProvider = ({ children }) => {
   };
 
   return (
-    <PaymentsContext.Provider value={{ payments, loadPayments, updatePayment, setClientId }}>
+    <PaymentsContext.Provider value={{ payments, loadPayments, updatePayment, setClientId, boletaCode, generateBoletaCode }}>
       {children}
     </PaymentsContext.Provider>
   );

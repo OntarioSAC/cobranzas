@@ -10,9 +10,9 @@ import logo from '../assests/img/logo.png';
 
 const ClientForm = () => {
     const { loadPayments, setClientId } = useContext(PaymentsContext);
-    const { projects } = useContext(ProjectsContext); // Usamos el contexto de proyectos
+    const { projects, lots, fetchLots } = useContext(ProjectsContext); // Usamos el contexto de proyectos
+
     const currencies = ['Soles', 'Dólares'];
-    const lots = ['Lote 1', 'Lote 2', 'Lote 3'];
 
     const [formData, setFormData] = useState({
         separationDate: '',
@@ -35,12 +35,23 @@ const ClientForm = () => {
     const [error, setError] = useState(null);
     const [showSpouseFields, setShowSpouseFields] = useState(false);
 
-    const handleInputChange = (e) => {
+    const handleInputChange = async (e) => {
         const { name, value } = e.target;
         setFormData((prevFormData) => ({
             ...prevFormData,
             [name]: value,
         }));
+
+        // Si el campo cambiado es 'selectedProject', usa solo el nombre del proyecto y llama a fetchLots
+        if (name === 'selectedProject') {
+            const selectedProject = projects.find(project => project.nombre_proyecto === value);
+            if (selectedProject) {
+                console.log('Nombre del proyecto seleccionado:', selectedProject.nombre_proyecto);
+                await fetchLots(selectedProject.nombre_proyecto); // Pasa solo el nombre del proyecto a fetchLots
+            } else {
+                console.error('No se encontró el proyecto seleccionado.');
+            }
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -75,7 +86,7 @@ const ClientForm = () => {
                         value={formData.selectedProject}
                         onChange={handleInputChange}
                         isExtendible={true}
-                        options={projects.map((project) => project.nombre_proyecto)} // Usamos los nombres de los proyectos
+                        options={projects.map((project) => project.nombre_proyecto)} // Usamos solo el nombre del proyecto
                     />
                     <InputField
                         label="Seleccionar Lote"
@@ -84,7 +95,7 @@ const ClientForm = () => {
                         value={formData.selectedLot}
                         onChange={handleInputChange}
                         isExtendible={true}
-                        options={lots}
+                        options={lots.map((lot) => lot.manzana_lote)} // Usamos solo el nombre del lote
                     />
                 </FormRow>
 
@@ -143,7 +154,6 @@ const ClientForm = () => {
                 </FormRow>
 
                 <FormRow>
-
                     <InputField
                         label="Moneda"
                         type="text"

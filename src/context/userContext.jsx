@@ -5,7 +5,7 @@ export const UserContext = createContext();
 
 const UserProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token') || null); // Inicializa con el token del localStorage si existe
-  const [user, setUser] = useState(null); // Para almacenar los datos del usuario autenticado
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null); // Inicializa con los datos del usuario si existen
   const [error, setError] = useState(null);
 
   // Función para autenticar al usuario
@@ -31,8 +31,9 @@ const UserProvider = ({ children }) => {
         throw new Error(data.error || 'Error al iniciar sesión.');
       }
 
-      // Almacenar el token en localStorage y en el estado
+      // Almacenar el token y los datos del usuario en localStorage y en el estado
       localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data)); // Almacena los datos del usuario
       setToken(data.token);
       setUser(data); // Guarda toda la información recibida
 
@@ -48,11 +49,11 @@ const UserProvider = ({ children }) => {
   // Función para cerrar sesión (logout)
   const logout = useCallback(() => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user'); // Eliminar los datos del usuario del localStorage
     setToken(null);
     setUser(null);
     console.log("Sesión cerrada.");
   }, []);
-
 
   // Función para solicitar el restablecimiento de contraseña
   const requestPasswordReset = useCallback(async (email) => {
@@ -79,7 +80,6 @@ const UserProvider = ({ children }) => {
       throw error; // Re-lanzar el error para que el componente lo maneje
     }
   }, []);
-
 
   // Función para confirmar el restablecimiento de contraseña
   const confirmPasswordReset = useCallback(async (resetToken, newPassword, confirmPassword) => {
