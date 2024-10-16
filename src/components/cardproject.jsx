@@ -12,14 +12,18 @@ const CardProject = () => {
             {projectCount > 0 ? (
                 projects.map((project, index) => (
                     <div key={index} style={styles.card}>
-                        {/* Sección superior con el logo o imagen del proyecto */}
+                        {/* Sección superior con la imagen del proyecto */}
                         <div style={styles.imageContainer}>
-                            <img src="https://via.placeholder.com/200x100" alt="Imagen del Proyecto" style={styles.image} />
+                            <img 
+                                src={project.imagen} 
+                                alt={`Imagen de ${project.nombre_proyecto}`} 
+                                style={styles.image} 
+                            />
                         </div>
 
                         {/* Sección inferior con la información del proyecto */}
                         <div style={styles.infoContainer}>
-                            <h3>{project.nombre_proyecto}</h3> {/* Asegúrate de usar el campo correcto, 'nombre_proyecto' */}
+                            <h3>{project.nombre_proyecto}</h3>
                         </div>
                     </div>
                 ))
@@ -36,11 +40,10 @@ const styles = {
         gridTemplateColumns: 'repeat(3, 1fr)',  // Tres columnas con igual tamaño
         gap: '20px',                  // Espacio entre las cartas
         justifyItems: 'center',       // Centrar cada carta horizontalmente
-        marginLeft: '200px',
+        marginTop: '30px'
     },
     card: {
         backgroundColor: '#f0f0f0',
-        // padding: '20px',
         width: '280px',
         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
         borderRadius: '10px',

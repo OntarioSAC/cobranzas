@@ -1,4 +1,3 @@
-// pdfGenerator.jsx
 import { jsPDF } from 'jspdf';
 import logo from '../assests/img/logo.png';
 
@@ -18,42 +17,56 @@ export const generatePDF = (formData, showSpouseFields) => {
     // Coloca el logo más arriba en la esquina superior izquierda
     doc.addImage(logo, 'PNG', leftMargin, 2, logoWidth, logoHeight); // Ajustamos la posición vertical del logo a 2
 
-    // Título y cabecera con código en el extremo derecho
-    doc.setFontSize(18);
-    // doc.text('RECIBO DE SEPARACIÓN', pageWidth / 2, 20, { align: 'center' });
-    doc.setFontSize(12);
-    doc.text('Código:', pageWidth - 30, 20); // Añade el texto "Código:" en el extremo derecho, dejando espacio para el valor
+    // Ajustamos el tamaño de la fuente para el contenido principal (formulario)
+    doc.setFontSize(10); // Reducimos el tamaño de la fuente para el formulario
 
     // Información principal organizada en un formato limpio
-    doc.setFontSize(12);
-    doc.text(`Fecha de separación: ${formData.separationDate}`, leftMargin, 50);
-    doc.text(`Moneda: ${formData.currency}`, pageWidth - 70, 50); // Moneda alineada a la derecha
+    let currentY = 50; // Coordenada inicial para la primera línea
+
+    // Agregar el código de boleta al PDF
+    doc.text(`Código de Boleta: ${formData.boletaCode}`, pageWidth - 80, currentY); // Código de boleta alineado a la derecha
+    currentY += 10;
+
+    doc.text(`Fecha de separación: ${formData.fecha_separacion}`, leftMargin, currentY);
+    currentY += 6; // Ajuste de espacio entre líneas
+    doc.text(`Fecha límite de la separación: ${formData.fecha_limite_separacion}`, leftMargin, currentY);
+
+    doc.text(`Moneda: ${formData.tipo_moneda}`, pageWidth - 80, currentY); // Moneda alineada a la derecha
+    currentY += 6; // Ajuste de espacio entre líneas
 
     // Información del cliente
-    doc.text(`Nombre del Cliente: ${formData.clientName}`, leftMargin, 60);
-    doc.text(`DNI: ${formData.dniClient}`, pageWidth - 70, 60); // DNI alineado a la derecha
-    doc.text(`Dirección: ${formData.address}`, leftMargin, 70);
-    doc.text(`E-mail: ${formData.email}`, pageWidth - 70, 70); // Email alineado a la derecha
-    doc.text(`Tel Fijo: ${formData.telFijo}`, leftMargin, 80);
-    doc.text(`Celular: ${formData.celular}`, pageWidth - 70, 80); // Celular alineado a la derecha
+    doc.text(`Nombre del Cliente: ${formData.nombres} ${formData.apellidos}`, leftMargin, currentY);
+    doc.text(`${formData.tipo_documento}: ${formData.num_documento}`, pageWidth - 80, currentY); // Tipo de documento y número alineado a la derecha
+    currentY += 6;
+    doc.text(`Dirección: ${formData.direccion}`, leftMargin, currentY);
+    doc.text(`E-mail: ${formData.correo}`, pageWidth - 80, currentY); // Email alineado a la derecha
+    currentY += 6;
+    doc.text(`Tel Fijo: ${formData.telefono_fijo}`, leftMargin, currentY);
+    doc.text(`Celular: ${formData.celular}`, pageWidth - 80, currentY); // Celular alineado a la derecha
+    currentY += 6;
 
     // Información de proyectos y lotes
-    doc.text(`Proyecto: ${formData.selectedProject}`, leftMargin, 90);
-    doc.text(`Lote: ${formData.selectedLot}`, pageWidth - 70, 90); // Lote alineado a la derecha
+    doc.text(`Proyecto: ${formData.selectedProject}`, leftMargin, currentY);
+    doc.text(`Lote: ${formData.selectedLot}`, pageWidth - 80, currentY); // Lote alineado a la derecha
+    currentY += 6;
 
     // Importe de separación basado en la moneda seleccionada
-    const importeLabel = formData.currency === 'Soles' ? `Importe de separación: S/ ${formData.soles}` : `Importe de separación: $ ${formData.dolares}`;
-    doc.text(importeLabel, leftMargin, 100);
+    doc.text(`Importe de separación: ${formData.inicial_separacion} ${formData.tipo_moneda}`, leftMargin, currentY);
+    currentY += 6;
 
     // Mostrar información del cónyuge solo si se seleccionó la opción
     if (showSpouseFields) {
-        doc.text('Datos del Cónyuge:', leftMargin, 110);
-        doc.text(`Nombre del Cónyuge: ${formData.spouseName}`, leftMargin, 120);
-        doc.text(`DNI del Cónyuge: ${formData.dniSpouse}`, pageWidth - 70, 120); // DNI del cónyuge alineado a la derecha
+        doc.text('Datos del Cónyuge:', leftMargin, currentY);
+        currentY += 6;
+        doc.text(`Nombre del Cónyuge: ${formData.nombre_conyuge} ${formData.apellidos_conyuge}`, leftMargin, currentY);
+        doc.text(`${formData.tipo_documento_conyuge}: ${formData.dni_conyuge}`, pageWidth - 80, currentY); // Tipo de documento y número del cónyuge alineado a la derecha
+        currentY += 6;
     }
 
-    // Declaración Jurada centrada y con fuente más pequeña
-    doc.setFontSize(10);
+    // Declaración Jurada
+    currentY += 20; // Añadimos más espacio antes de la declaración jurada
+    doc.setFontSize(11);
+
     const declarationText = `
 Declaración Jurada: El cliente por el presente declara que ha sido informado verbalmente por la empresa sobre el lote a adquirir: Partida Registral del proyecto, situación del saneamiento (Licencias, Habilitación Urbana) área del inmueble, áreas comunes, acabados y servicios básicos así como los datos de la empresa (RUC, partida, representante).
 1. El monto de separación de un lote por la suma mínima de S/. 50.00 (cincuenta con 00/100 soles).
@@ -65,10 +78,10 @@ Declaración Jurada: El cliente por el presente declara que ha sido informado ve
 7. Se deja constancia que el lote a adquirir es un bien futuro de acuerdo a lo estipulado en el Art 1534 del Código Civil.
     `;
     const splitDeclarationText = doc.splitTextToSize(declarationText, pageWidth - 30);
-    doc.text(splitDeclarationText, leftMargin, 140);
+    doc.text(splitDeclarationText, leftMargin, currentY);
 
     // Firmas y líneas para firmas
-    const lineYPosition = 260;
+    const lineYPosition = 250; // Ajustamos la posición de las líneas de firma
     doc.line(leftMargin, lineYPosition - 5, leftMargin + 40, lineYPosition - 5); // Línea para firma de La Empresa
     doc.line(pageWidth - 55, lineYPosition - 5, pageWidth - 15, lineYPosition - 5); // Línea para firma del Cliente
     doc.text('La Empresa', leftMargin + 10, lineYPosition);

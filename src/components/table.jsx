@@ -52,18 +52,18 @@ const Table = ({ data }) => {
 
   // Abrir el modal de pagos para un cliente específico
   const handleOpenModalPay = (client) => {
-    setSelectedClient(client); 
-    setClientId(client.id_fichadc); 
-    setPaymentsLoaded(false); 
-    setShowModalPay(true); 
+    setSelectedClient(client);
+    setClientId(client.id_fichadc);
+    setPaymentsLoaded(false);
+    setShowModalPay(true);
   };
 
   // Abrir el modal de Inicial para un cliente específico
   const handleOpenModalInitial = (client) => {
-    setSelectedClient(client); 
-    setClientId(client.id_fichadc); 
-    setPaymentsLoaded(false); 
-    setShowModalInitial(true); 
+    setSelectedClient(client);
+    setClientId(client.id_fichadc);
+    setPaymentsLoaded(false);
+    setShowModalInitial(true);
   };
 
   useEffect(() => {
@@ -170,8 +170,15 @@ const Table = ({ data }) => {
                 style={trStyles(index)}
                 onClick={(event) => handleRowClick(event, index)}
               >
-                <td style={{ ...tdStyles, width: '200px' }}>{row.nombres} {row.apellidos}</td>
-                <td style={{ ...tdStyles, ...proyectoStyles, width: '200px' }}>{row.proyecto}</td>
+                <td style={{ ...tdStyles, width: '200px' }}>
+                  {row.personas.length > 0 && (
+                    row.personas.map((persona, idx) => (
+                      <div key={idx}>
+                        {persona.nombres} {persona.apellidos}
+                      </div>
+                    ))
+                  )}
+                </td>                <td style={{ ...tdStyles, ...proyectoStyles, width: '200px' }}>{row.proyecto}</td>
                 <td style={{ ...tdStyles, ...loteStyles, width: '100px' }}>{row.lote}</td>
                 <td style={{ ...tdStyles, width: '100px' }}>{row.morosidad ? 'Sí' : 'No'}</td>
               </tr>

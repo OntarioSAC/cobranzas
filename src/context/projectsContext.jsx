@@ -14,6 +14,7 @@ const ProjectsProvider = ({ children }) => {
                 const response = await fetch('http://100.42.184.197/api/v1/dataproject/');
                 const data = await response.json();
                 setProjects(data);
+                console.log(data)
             } catch (error) {
                 console.error('Error al obtener los proyectos:', error);
             }

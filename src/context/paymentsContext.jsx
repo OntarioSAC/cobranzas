@@ -6,7 +6,7 @@ export const PaymentsContext = createContext();
 const PaymentsProvider = ({ children }) => {
   const [payments, setPayments] = useState({}); // Inicializamos como un objeto vacío en lugar de un array
   const [clientId, setClientId] = useState(null); // Guardamos el clientId global
-  const [boletaCode, setBoletaCode] = useState(''); // Estado para almacenar el código generado por el backend
+  const [boletaCode, setBoletaCode] = useState('');
 
   // Función para cargar los pagos desde la API, usando el clientId global
   const loadPayments = useCallback(async () => {
@@ -26,20 +26,7 @@ const PaymentsProvider = ({ children }) => {
     }
   }, [clientId]);
 
-  // Función para generar el código de boleta desde la API
-  const generateBoletaCode = useCallback(async () => {
-    try {
-      const response = await fetch('http://100.42.184.197/api/v1/generate_boleta_code/');
-      if (!response.ok) {
-        throw new Error(`Error al generar el código de boleta: ${response.statusText}`);
-      }
-      const data = await response.json();
-      setBoletaCode(data.codigo); // Suponiendo que el backend retorna un objeto con el campo "codigo"
-      console.log("Código de boleta generado:", data.codigo);
-    } catch (error) {
-      console.error("Error al generar el código de boleta:", error);
-    }
-  }, []);
+  
 
   // Función para actualizar una cuota específica de un cliente
   const updatePayment = async (cuotaId, updatedData) => {
@@ -74,8 +61,36 @@ const PaymentsProvider = ({ children }) => {
     }
   };
 
+    // Función para enviar los datos del cliente al backend y obtener el código de boleta
+    const postClientData = useCallback(async (formData) => {
+      try {
+
+        console.log('Datos enviados al backend:', formData); // Muestra los datos que estamos enviando al backend
+
+
+        const response = await fetch('http://100.42.184.197/api/v1/post_cliente_separacion/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+  
+        if (!response.ok) {
+          throw new Error(`Error al registrar los datos del cliente: ${response.statusText}`);
+        }
+  
+        const data = await response.json();
+        setBoletaCode(data.cod_boleta); // Almacenamos el código de boleta retornado por el backend
+        return data; // Retornamos los datos para que puedan ser utilizados en el formulario
+      } catch (error) {
+        console.error("Error al registrar los datos del cliente:", error);
+        throw error; // Propagamos el error para que pueda ser manejado en el formulario
+      }
+    }, []);
+
   return (
-    <PaymentsContext.Provider value={{ payments, loadPayments, updatePayment, setClientId, boletaCode, generateBoletaCode }}>
+    <PaymentsContext.Provider value={{ payments, loadPayments, updatePayment, setClientId,  boletaCode, postClientData }}>
       {children}
     </PaymentsContext.Provider>
   );

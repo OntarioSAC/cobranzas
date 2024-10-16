@@ -83,8 +83,9 @@ const ModalPay = ({ show, onClose, client }) => {
           &times;
         </button>
         <h2 style={modalStyles.title}>Cronograma de Pagos</h2>
-        <h3 style={modalStyles.clientName}>{client.nombres} {client.apellidos}</h3>
-        <h3 style={modalStyles.clientName}>{client.proyecto} {client.lote}</h3>
+        <h3 style={modalStyles.clientName}>
+          {client.personas.length > 0 ? `${client.personas[0].nombres} ${client.personas[0].apellidos}` : 'Sin nombre'}
+        </h3>
 
         {/* Aquí se muestra la información adicional del cliente */}
         <div style={modalStyles.infoBox}>
