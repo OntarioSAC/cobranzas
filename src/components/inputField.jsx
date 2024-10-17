@@ -183,12 +183,6 @@ const styles = {
   },
 };
 
-// Añadir esta regla global de CSS para ocultar la barra de desplazamiento en navegadores basados en WebKit (como Chrome y Safari)
-const globalStyles = `
-  ::-webkit-scrollbar {
-    display: none;
-  }
-`;
-document.head.insertAdjacentHTML('beforeend', `<style>${globalStyles}</style>`);
+
 
 export default InputField;
